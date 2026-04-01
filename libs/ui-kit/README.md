@@ -13,28 +13,18 @@ Consumers must install compatible versions of:
 
 ## Standalone App Integration
 
-For an app that lives outside this monorepo and imports `@reference-app-laravel-vue/ui-kit`, keep the Vuetify `configFile` inside the consumer app.
+For an app that imports `@reference-app-laravel-vue/ui-kit`, it can consume the library's SASS settings directly without duplicating tokens.
 
-Example `src/styles/settings.scss` in the consumer app:
-
-```scss
-$button-border-radius: 2px;
-$card-border-radius: 1px;
-$body-font-family: 'Open Sans Variable', sans-serif;
-
-@use '../../node_modules/vuetify/_settings' with (
-  $body-font-family: $body-font-family,
-  $button-border-radius: $button-border-radius,
-  $card-border-radius: $card-border-radius
-);
-```
-
-Example `vite.config.ts`:
+Example `vite.config.ts` in the consumer app:
 
 ```ts
+import { fileURLToPath, URL } from 'node:url';
 import { defineConfig } from 'vite';
 import vue from '@vitejs/plugin-vue';
 import vuetify from 'vite-plugin-vuetify';
+
+const localNodeModules = fileURLToPath(new URL('./node_modules', import.meta.url));
+/* Add your monorepo workspace node_modules here if applicable */
 
 export default defineConfig({
   plugins: [
@@ -42,10 +32,27 @@ export default defineConfig({
     vuetify({
       autoImport: true,
       styles: {
-        configFile: 'src/styles/settings.scss',
+        configFile: fileURLToPath(
+          new URL(
+            './node_modules/@reference-app-laravel-vue/ui-kit/src/styles/_index.scss',
+            import.meta.url
+          )
+        ),
       },
     }),
   ],
+  css: {
+    preprocessorOptions: {
+      scss: {
+        api: 'modern-compiler',
+        loadPaths: [localNodeModules],
+      },
+      sass: {
+        api: 'modern-compiler',
+        loadPaths: [localNodeModules],
+      },
+    },
+  },
 });
 ```
 
@@ -60,6 +67,5 @@ import '@reference-app-laravel-vue/ui-kit/overrides';
 
 ## Notes
 
-- The consumer app should own the Vuetify Sass settings file.
+- The consumer app delegates its Vuetify SASS variables to `@reference-app-laravel-vue/ui-kit`.
 - `@reference-app-laravel-vue/ui-kit/overrides` remains the stable shared CSS entry.
-- Design tokens used by Showcase can be copied from the template app or documented centrally as needed.
