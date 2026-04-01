@@ -1,0 +1,50 @@
+{
+  "extends": ["stylelint-prettier/recommended", "stylelint-config-recess-order"],
+  "ignoreFiles": [
+    "**/node_modules/**",
+    "**/vendor/**",
+    "**/dist/**",
+    "**/build/**",
+    "**/coverage/**"
+  ],
+  "overrides": [
+    {
+      "files": ["**/*.css"],
+      "extends": ["stylelint-config-standard"],
+      "rules": {
+        "at-rule-no-unknown": true
+      }
+    },
+    {
+      "files": ["**/*.scss"],
+      "extends": ["stylelint-config-standard-scss"],
+      "customSyntax": "postcss-scss"
+    },
+    {
+      "files": ["**/*.vue"],
+      "extends": ["stylelint-config-standard"],
+      "rules": {
+        "selector-class-pattern": null,
+        "custom-property-pattern": null,
+        "at-rule-no-unknown": true,
+        "selector-pseudo-class-no-unknown": [
+          true,
+          {
+            "ignorePseudoClasses": ["deep", "global", "v-deep", "slotted"]
+          }
+        ],
+        "selector-pseudo-element-no-unknown": [
+          true,
+          {
+            "ignorePseudoElements": ["v-deep", "v-global", "v-slotted"]
+          }
+        ]
+      },
+      "customSyntax": "postcss-html"
+    }
+  ],
+  "rules": {
+    "selector-class-pattern": null,
+    "custom-property-pattern": null
+  }
+}

@@ -1,0 +1,99 @@
+{
+  "name": "AHI Showcase Application",
+  "dockerComposeFile": ["../docker-compose.yml", "../docker-compose.local.yml"],
+  "service": "app",
+  "workspaceFolder": "/var/www/html/apps/showcase",
+  "shutdownAction": "stopCompose",
+  "overrideCommand": true,
+  "forwardPorts": [8000, 5173, 3306, 6379],
+  "portsAttributes": {
+    "8000": {
+      "label": "Laravel App (Nginx)",
+      "onAutoForward": "notify"
+    },
+    "5173": {
+      "label": "Vite Dev Server",
+      "onAutoForward": "notify"
+    },
+    "3306": {
+      "label": "MySQL",
+      "onAutoForward": "silent"
+    },
+    "6379": {
+      "label": "Redis",
+      "onAutoForward": "silent"
+    }
+  },
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "vue.volar",
+        "vue.vscode-typescript-vue-plugin",
+        "bmewburn.vscode-intelephense-client",
+        "MehediDracula.php-namespace-resolver",
+        "xdebug.php-debug",
+        "neilbrayfield.php-docblocker",
+        "dbaeumer.vscode-eslint",
+        "esbenp.prettier-vscode",
+        "stylelint.vscode-stylelint",
+        "csstools.postcss",
+        "softarc.sheriff",
+        "bradlc.vscode-tailwindcss",
+        "SonarSource.sonarlint-vscode",
+        "vivaxy.vscode-conventional-commits",
+        "EditorConfig.EditorConfig",
+        "ms-azuretools.vscode-docker",
+        "streetsidesoftware.code-spell-checker",
+        "wmaurer.change-case",
+        "bradgashler.htmltagwrap",
+        "mikestead.dotenv",
+        "eamodio.gitlens",
+        "aaron-bond.better-comments",
+        "usernamehw.errorlens"
+      ],
+      "settings": {
+        "terminal.integrated.defaultProfile.linux": "bash",
+        "php.suggest.basic": false,
+        "php.validate.enable": false,
+        "intelephense.environment.phpVersion": "8.2.0",
+        "editor.formatOnSave": true,
+        "editor.defaultFormatter": "esbenp.prettier-vscode",
+        "[php]": {
+          "editor.defaultFormatter": "bmewburn.vscode-intelephense-client"
+        },
+        "[vue]": {
+          "editor.defaultFormatter": "esbenp.prettier-vscode"
+        },
+        "[typescript]": {
+          "editor.defaultFormatter": "esbenp.prettier-vscode"
+        },
+        "[javascript]": {
+          "editor.defaultFormatter": "esbenp.prettier-vscode"
+        },
+        "[json]": {
+          "editor.defaultFormatter": "esbenp.prettier-vscode"
+        },
+        "[css]": {
+          "editor.defaultFormatter": "stylelint.vscode-stylelint"
+        },
+        "[scss]": {
+          "editor.defaultFormatter": "stylelint.vscode-stylelint"
+        }
+      }
+    }
+  },
+  "postCreateCommand": "composer install && php artisan key:generate && cd ../.. && pnpm install",
+  "postStartCommand": "php artisan migrate --force",
+  "remoteUser": "www-data",
+  "features": {
+    "ghcr.io/devcontainers/features/node:1": {
+      "version": "24.12.0",
+      "nodeGypDependencies": true,
+      "installYarnUsingApt": false
+    },
+    "ghcr.io/devcontainers/features/git:1": {
+      "version": "latest"
+    }
+  },
+  "postAttachCommand": "corepack enable && corepack prepare pnpm@10.6.0 --activate"
+}

@@ -1,0 +1,19 @@
+// Component style overrides
+// Import this file in your app entry point AFTER 'vuetify/styles'.
+// Each component file exposes an `overrides` mixin with its CSS rules.
+@use 'badges';
+@use 'buttons';
+@use 'cards';
+@use 'dividers';
+@use 'labels';
+@use 'switches';
+@use 'tooltips';
+@use 'typography';
+@include badges.overrides;
+@include buttons.overrides;
+@include cards.overrides;
+@include dividers.overrides;
+@include labels.overrides;
+@include switches.overrides;
+@include tooltips.overrides;
+@include typography.overrides;

@@ -1,0 +1,159 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "NVS Setup",
+      "type": "shell",
+      "command": "nvs auto",
+      "icon": {
+        "color": "terminal.ansiGreen",
+        "id": "tag"
+      },
+      "group": "none",
+      "runOptions": {
+        "runOn": "folderOpen"
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "Dev: Showcase App",
+      "type": "shell",
+      "command": "pnpm --filter @reference-app-laravel-vue/showcase dev",
+      "isBackground": true,
+      "icon": {
+        "color": "terminal.ansiCyan",
+        "id": "server"
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "Dev: Showcase UI Kit",
+      "type": "shell",
+      "command": "pnpm --filter @reference-app-laravel-vue/showcase-ui-kit dev",
+      "isBackground": true,
+      "icon": {
+        "color": "terminal.ansiCyan",
+        "id": "server"
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "Build: All",
+      "type": "shell",
+      "command": "pnpm build",
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      },
+      "icon": {
+        "color": "terminal.ansiYellow",
+        "id": "tools"
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "Lint: All",
+      "type": "shell",
+      "command": "pnpm lint",
+      "icon": {
+        "color": "terminal.ansiMagenta",
+        "id": "checklist"
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "Test: All",
+      "type": "shell",
+      "command": "pnpm test",
+      "group": {
+        "kind": "test",
+        "isDefault": true
+      },
+      "icon": {
+        "color": "terminal.ansiBlue",
+        "id": "beaker"
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "Sheriff: Verify",
+      "type": "shell",
+      "command": "pnpm sheriff:verify",
+      "icon": {
+        "color": "terminal.ansiRed",
+        "id": "shield"
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "Docker: Up",
+      "type": "shell",
+      "command": "docker compose -f docker-compose.yml -f docker-compose.local.yml up -d",
+      "icon": {
+        "color": "terminal.ansiBlue",
+        "id": "vm"
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "Docker: Down",
+      "type": "shell",
+      "command": "docker compose -f docker-compose.yml -f docker-compose.local.yml down",
+      "icon": {
+        "color": "terminal.ansiRed",
+        "id": "vm"
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "Docker: Logs",
+      "type": "shell",
+      "command": "docker compose -f docker-compose.yml -f docker-compose.local.yml logs -f",
+      "isBackground": true,
+      "icon": {
+        "color": "terminal.ansiCyan",
+        "id": "output"
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "Docker Azure: Up",
+      "type": "shell",
+      "command": "docker compose -f docker-compose.yml -f docker-compose.azure.yml up -d",
+      "icon": {
+        "color": "terminal.ansiBlue",
+        "id": "vm"
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "Docker Azure: Down",
+      "type": "shell",
+      "command": "docker compose -f docker-compose.yml -f docker-compose.azure.yml down",
+      "icon": {
+        "color": "terminal.ansiRed",
+        "id": "vm"
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "Docker Azure: Logs",
+      "type": "shell",
+      "command": "docker compose -f docker-compose.yml -f docker-compose.azure.yml logs -f",
+      "isBackground": true,
+      "icon": {
+        "color": "terminal.ansiCyan",
+        "id": "output"
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "Type Check: Showcase",
+      "type": "shell",
+      "command": "pnpm",
+      "args": ["--filter", "@reference-app-laravel-vue/showcase", "type-check"],
+      "isBackground": false,
+      "group": "test"
+    }
+  ]
+}

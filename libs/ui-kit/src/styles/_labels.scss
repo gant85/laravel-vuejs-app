@@ -1,0 +1,77 @@
+@use 'typography';
+
+// CSS overrides for MD3-compliant Label component.
+@mixin overrides {
+  // ── Base ────────────────────────────────────────────────────────────
+  // Anatomy border-radius: 2px (Figma "Labels Component").
+  .ui-label.v-chip {
+    border-radius: 2px !important;
+  }
+
+  // Icon-to-text spacing: 2px gap for all sizes.
+  .ui-label .v-chip__prepend {
+    margin-inline: 0 2px;
+  }
+
+  // ── Extra-large (32 px) ────────────────────────────────────────────
+  // Text style: AH/label/medium-sb (0.75 rem / 1 rem / 600).
+  .ui-label--extra-large.v-chip {
+    min-width: 32px;
+    height: 32px;
+    padding: 0 4px;
+
+    @include typography.text-style('label', 'medium', 'semibold');
+  }
+
+  .ui-label--extra-large .v-icon {
+    font-size: 16px !important;
+  }
+
+  // ── Large (24 px) ──────────────────────────────────────────────────
+  // Text style: AH/label/medium-sb. Item spacing: 2px.
+  .ui-label--large.v-chip {
+    min-width: 24px;
+    height: 24px;
+    padding: 0 4px;
+
+    @include typography.text-style('label', 'medium', 'semibold');
+  }
+
+  .ui-label--large .v-icon {
+    font-size: 14px !important;
+  }
+
+  // ── Medium (20 px) ─────────────────────────────────────────────────
+  // Text style: AH/label/extra-small-sb (0.625 rem / 0.875 rem / 600).
+  .ui-label--medium.v-chip {
+    min-width: 20px;
+    height: 20px;
+    padding: 0 4px;
+
+    @include typography.text-style('label', 'extra-small', 'semibold');
+  }
+
+  .ui-label--medium .v-icon {
+    font-size: 12px !important;
+  }
+
+  // ── Small (16 px) ──────────────────────────────────────────────────
+  // Text style: AH/label/extra-small-sb. Tighter padding (2 px).
+  .ui-label--small.v-chip {
+    min-width: 16px;
+    height: 16px;
+    padding: 0 2px;
+
+    @include typography.text-style('label', 'extra-small', 'semibold');
+  }
+
+  .ui-label--small .v-icon {
+    font-size: 10px !important;
+  }
+
+  // ── Tint appearance border ─────────────────────────────────────────
+  // Figma: border-weight 1px for Tint appearance.
+  .ui-label--tint.v-chip {
+    border: 1px solid currentcolor !important;
+  }
+}

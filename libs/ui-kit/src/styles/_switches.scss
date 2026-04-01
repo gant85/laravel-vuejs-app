@@ -1,0 +1,91 @@
+@use 'typography';
+
+// CSS overrides for MD3-compliant Switch component.
+@mixin overrides {
+  // ── Wrapper geometry ───────────────────────────────────────────────
+  // Vuetify reserves a wider inset wrapper by default. Constrain the
+  // wrapper and input so the rendered control keeps the 40 × 20px track.
+  .ui-switch .v-selection-control__wrapper {
+    flex: 0 0 40px !important;
+    width: 40px !important;
+  }
+
+  .ui-switch .v-selection-control__input {
+    left: 0 !important;
+    width: 40px !important;
+  }
+
+  // ── Track ──────────────────────────────────────────────────────────
+  // MD3 spec: 40px × 20px, fully-rounded (border-radius: 100px).
+  // Active-off (unchecked): surface-container background + outline border 1px.
+  .ui-switch .v-switch__track {
+    width: 40px !important;
+    min-width: 40px !important;
+    height: 20px !important;
+    background: rgb(var(--v-theme-surface-container)) !important;
+    border: 1px solid rgb(var(--v-theme-outline)) !important;
+    border-radius: 100px !important;
+    opacity: 1 !important;
+  }
+
+  // Active-on (checked): primary background, no border.
+  .ui-switch .v-selection-control--dirty .v-switch__track {
+    background: rgb(var(--v-theme-primary)) !important;
+    border-color: transparent !important;
+  }
+
+  // ── Handle (Thumb) ─────────────────────────────────────────────────
+  // MD3 spec: 14px × 14px, border-radius: 24px.
+  .ui-switch .v-switch__thumb {
+    width: 14px !important;
+    height: 14px !important;
+    background: rgb(var(--v-theme-on-surface)) !important;
+    border-radius: 24px !important;
+    transform: none !important;
+  }
+
+  // Active-on handle uses on-primary.
+  .ui-switch .v-selection-control--dirty .v-switch__thumb {
+    background: rgb(var(--v-theme-on-primary)) !important;
+  }
+
+  // ── Disabled states ────────────────────────────────────────────────
+  // Track: surface-container-highest background + outline-variant border.
+  .ui-switch.v-input--disabled .v-switch__track {
+    background: rgb(var(--v-theme-surface-container-highest)) !important;
+    border-color: rgb(var(--v-theme-outline-variant)) !important;
+    opacity: 1 !important;
+  }
+
+  // Disabled off handle: on-surface-variant.
+  .ui-switch.v-input--disabled .v-switch__thumb {
+    background: rgb(var(--v-theme-on-surface-variant)) !important;
+  }
+
+  // Disabled on handle: on-primary.
+  .ui-switch.v-input--disabled .v-selection-control--dirty .v-switch__thumb {
+    background: rgb(var(--v-theme-on-primary)) !important;
+  }
+
+  // ── Label gap ──────────────────────────────────────────────────────
+  // MD3 spec: 4px item spacing between switch track and label text.
+  .ui-switch .v-selection-control {
+    column-gap: 4px;
+  }
+
+  // ── Label typography ───────────────────────────────────────────────
+  // Text style: AH/label/large, color: on-surface.
+  .ui-switch .ui-switch__label-text {
+    color: rgb(var(--v-theme-on-surface));
+
+    @include typography.text-style('label', 'large');
+  }
+
+  // Required asterisk: AH/label/large-bd, error color.
+  .ui-switch .ui-switch__required {
+    margin-left: 2px;
+    color: rgb(var(--v-theme-error));
+
+    @include typography.text-style('label', 'large', 'bold');
+  }
+}

@@ -1,0 +1,90 @@
+# Docker Compose override for local development with Docker services
+# Use: docker compose -f docker-compose.yml -f docker-compose.local.yml up -d
+
+services:
+  # PostgreSQL Database - Local only
+  postgres:
+    image: postgres:16
+    container_name: reference-app-laravel-vue-postgres
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_DB: hospital
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./docker/postgres/postgresql.conf:/etc/postgresql/postgresql.conf
+    networks:
+      - reference-app-laravel-vue-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Redis Cache - Local only
+  redis:
+    image: redis:7-alpine
+    container_name: reference-app-laravel-vue-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - reference-app-laravel-vue-network
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Jaeger - Distributed tracing (OpenTelemetry)
+  jaeger:
+    image: jaegertracing/all-in-one:latest
+    container_name: reference-app-laravel-vue-jaeger
+    ports:
+      - "16686:16686" # Jaeger UI
+      - "4318:4318" # OTLP HTTP receiver
+      - "4317:4317" # OTLP gRPC receiver
+    networks:
+      - reference-app-laravel-vue-network
+    environment:
+      - COLLECTOR_OTLP_ENABLED=true
+      - CORS_ALLOWED_ORIGINS=http://localhost:8000,http://localhost:5173
+      - CORS_ALLOWED_HEADERS=*
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "-q", "http://localhost:14269"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # PHP Application with local dependencies
+  app:
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      jaeger:
+        condition: service_healthy
+    environment:
+      DB_CONNECTION: pgsql
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_DATABASE: showcase
+      DB_USERNAME: postgres
+      DB_PASSWORD: postgres
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      # OpenTelemetry configuration
+      OTEL_SERVICE_NAME: showcase-backend
+      OTEL_TRACES_EXPORTER: otlp
+      OTEL_EXPORTER_OTLP_ENDPOINT: http://jaeger:4318
+      OTEL_PHP_AUTOLOAD_ENABLED: true
+
+volumes:
+  postgres_data:
+    driver: local
+  redis_data:
+    driver: local

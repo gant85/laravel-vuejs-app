@@ -1,0 +1,47 @@
+@use 'typography';
+
+// CSS overrides for divider variants (emitted via overrides.scss)
+@mixin overrides {
+  // ── Opacity fix ────────────────────────────────────────────────────
+  // Vuetify defaults to --v-border-opacity (0.12) which makes dividers
+  // nearly invisible. MD3 specifies outline-variant at full opacity.
+  .v-divider {
+    opacity: 1 !important;
+  }
+
+  // ── Horizontal inset ───────────────────────────────────────────────
+  .ui-divider--inset:not(.v-divider--vertical) {
+    margin-inline-start: 16px !important;
+  }
+
+  // ── Horizontal middle-inset ────────────────────────────────────────
+  .ui-divider--middle-inset:not(.v-divider--vertical) {
+    margin-inline: 16px !important;
+  }
+
+  // ── Vertical inset ─────────────────────────────────────────────────
+  .ui-divider--inset.v-divider--vertical {
+    margin-block-start: 16px !important;
+  }
+
+  // ── Vertical middle-inset ──────────────────────────────────────────
+  .ui-divider--middle-inset.v-divider--vertical {
+    margin-block: 16px !important;
+  }
+
+  // ── Subheader wrapper ──────────────────────────────────────────────
+  .ui-divider-with-subheader {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    width: 100%;
+    padding-right: 16px;
+    padding-left: 16px;
+  }
+
+  .ui-divider-subheader-text {
+    color: rgb(var(--v-theme-on-surface));
+
+    @include typography.text-style('title', 'small');
+  }
+}

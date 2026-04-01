@@ -1,0 +1,42 @@
+pre-commit:
+  skip:
+    - merge
+    - rebase
+  parallel: false
+  commands:
+    prettier:
+      glob: '*.{js,ts,jsx,tsx,vue,css,scss,json,md}'
+      run: npx prettier --write {staged_files}
+      stage_fixed: true
+    eslint:
+      glob: '*.{js,ts,jsx,tsx,vue}'
+      run: npx eslint --fix {staged_files}
+      root: "./"
+      stage_fixed: true
+    stylelint:
+      glob: '*.{css,scss,vue}'
+      run: npx stylelint --fix {staged_files}
+      stage_fixed: true
+    php-lint:
+      glob: 'apps/showcase/**/*.php'
+      run: powershell -ExecutionPolicy Bypass -File scripts/php-lint.ps1 "{staged_files}"
+      stage_fixed: false
+
+post-merge:
+  parallel: true
+  files: 'git diff-tree -r --name-only --no-commit-id ORIG_HEAD HEAD'
+  commands:
+    dependencies:
+      glob: '{package.json,pnpm-lock.yaml}'
+      run: pnpm install
+    php-dependencies:
+      glob: 'composer.{json,lock}'
+      run: docker exec reference-app-laravel-vue-php composer install
+
+commit-msg:
+  skip:
+    - merge
+    - rebase
+  commands:
+    commitlint:
+      run: npx commitlint --edit {1} --verbose

@@ -1,0 +1,74 @@
+@use 'sass:list';
+@use 'sass:map';
+@use 'typography';
+
+// Variables (consumed by vuetify/settings via _index.scss)
+$border-radius: 2px;
+
+// CSS overrides (emitted via overrides.scss)
+// Each size maps to (height, padding)
+$button-sizes: (
+  'small': (
+    padding: 6px 12px,
+    height: 32px,
+    gap: 4px,
+    border-radius: 2px,
+  ),
+  'default': (
+    padding: 10px 16px,
+    height: 40px,
+    gap: 8px,
+    border-radius: 2px,
+  ),
+  'large': (
+    padding: 16px 24px,
+    height: 56px,
+    gap: 8px,
+    border-radius: 5px,
+  ),
+);
+
+// Typography per size: (role, size, weight)
+$button-typography: (
+  'small': (
+    'label',
+    'large',
+    'semibold',
+  ),
+  'default': (
+    'label',
+    'large',
+    'semibold',
+  ),
+  'large': (
+    'body',
+    'large',
+    'semibold',
+  ),
+);
+
+@mixin overrides {
+  @each $size, $props in $button-sizes {
+    $typo: map.get($button-typography, $size);
+
+    // :not(.v-btn--icon) prevents overriding dimensions on icon-only buttons
+    .v-btn--size-#{$size}:not(.v-btn--icon) {
+      gap: map.get($props, gap) !important;
+      height: map.get($props, height) !important;
+      padding: map.get($props, padding) !important;
+      border-radius: map.get($props, border-radius) !important;
+
+      @include typography.text-style(list.nth($typo, 1), list.nth($typo, 2), list.nth($typo, 3));
+    }
+  }
+
+  .v-btn {
+    display: flex !important;
+    flex-direction: row !important;
+    text-transform: none !important;
+
+    .v-btn__prepend {
+      margin: 0 !important;
+    }
+  }
+}

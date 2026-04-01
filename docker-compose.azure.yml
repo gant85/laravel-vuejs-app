@@ -1,0 +1,24 @@
+# Docker Compose override for development with Azure services
+# Use: docker compose -f docker-compose.yml -f docker-compose.azure.yml up -d
+# Requires: .env.azure file with Azure credentials configured
+
+services:
+  # PHP Application only - connects to Azure PostgreSQL and Redis
+  app:
+    environment:
+      # Database connection will be read from .env.azure
+      DB_CONNECTION: pgsql
+      DB_HOST: ${DB_HOST}
+      DB_PORT: ${DB_PORT:-5432}
+      DB_DATABASE: ${DB_DATABASE}
+      DB_USERNAME: ${DB_USERNAME}
+      DB_PASSWORD: ${DB_PASSWORD}
+      # Redis connection will be read from .env.azure
+      REDIS_HOST: ${REDIS_HOST}
+      REDIS_PASSWORD: ${REDIS_PASSWORD}
+      REDIS_PORT: ${REDIS_PORT:-6380}
+      REDIS_SCHEME: ${REDIS_SCHEME:-tls}
+      # Session and cache drivers
+      SESSION_DRIVER: ${SESSION_DRIVER:-redis}
+      CACHE_STORE: ${CACHE_STORE:-redis}
+      QUEUE_CONNECTION: ${QUEUE_CONNECTION:-redis}

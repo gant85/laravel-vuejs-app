@@ -1,0 +1,83 @@
+@use 'typography';
+
+// CSS overrides for MD3-compliant Tooltip component.
+@mixin overrides {
+  // ── Plain Tooltip ──────────────────────────────────────────────────
+  // Teleported to <body> to escape overflow:hidden containers.
+  // MD3 spec: min-height 24px, border-radius 3px,
+  // background: inverse-surface, text: inverse-on-surface,
+  // typography: body/small, padding: 2px 8px.
+  .ui-tooltip-plain {
+    z-index: 2000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 24px;
+    padding: 2px 8px;
+    color: rgb(var(--v-theme-inverse-on-surface));
+    pointer-events: none;
+    background-color: rgb(var(--v-theme-inverse-surface));
+    border-radius: 3px;
+
+    @include typography.text-style('body', 'small');
+  }
+
+  // ── Rich Tooltip ───────────────────────────────────────────────────
+  // MD3 spec: surface-container-lowest background, border-radius 3px,
+  // drop shadow: M3/Elevation Light/1.
+  .ui-tooltip--rich-content.v-overlay__content {
+    padding: 0 !important;
+    overflow: visible !important;
+    background-color: rgb(var(--v-theme-surface-container-lowest)) !important;
+    border-radius: 3px !important;
+    box-shadow:
+      0 1px 3px 1px rgb(0 0 0 / 15%),
+      0 1px 2px 0 rgb(0 0 0 / 30%) !important;
+  }
+
+  // Rich tooltip inner layout container.
+  // Item spacing 8px between content and actions, padding-bottom 8px.
+  .ui-tooltip-rich {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    width: 312px;
+    padding-bottom: 8px;
+  }
+
+  // ── Rich Tooltip: Content area ─────────────────────────────────────
+  // Vertical layout, item spacing 4px, padding: 12px top, 4px bottom,
+  // 16px left/right.
+  .ui-tooltip-rich__content {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    padding: 12px 16px 4px;
+  }
+
+  // ── Rich Tooltip: Title (subhead) ──────────────────────────────────
+  // Text color: on-surface, text style: AH/title/small.
+  .ui-tooltip-rich__title {
+    color: rgb(var(--v-theme-on-surface));
+
+    @include typography.text-style('title', 'small');
+  }
+
+  // ── Rich Tooltip: Supporting text ──────────────────────────────────
+  // Text color: on-surface, text style: AH/body/small.
+  .ui-tooltip-rich__supporting {
+    color: rgb(var(--v-theme-on-surface));
+
+    @include typography.text-style('body', 'small');
+  }
+
+  // ── Rich Tooltip: Actions ──────────────────────────────────────────
+  // Horizontal layout, middle-left alignment, fill width,
+  // item spacing 8px, padding: 0 4px (left/right only).
+  .ui-tooltip-rich__actions {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    padding: 0 4px;
+  }
+}

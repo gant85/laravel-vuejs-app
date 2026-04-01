@@ -1,0 +1,27 @@
+@use 'typography';
+
+// CSS overrides for MD3-compliant Badge component.
+@mixin overrides {
+  // ── Large badge (with content) ─────────────────────────────────────
+  // MD3 spec: 14 dp height, 14 dp min-width, fully-rounded pill,
+  // label/small typography, error background, on-error text.
+  .ui-badge .v-badge__badge {
+    min-width: 14px;
+    max-width: 34px;
+    height: 14px;
+    padding: 0 3px;
+    border-radius: 100px;
+
+    @include typography.text-style('label', 'small');
+  }
+
+  // ── Small badge (dot) ──────────────────────────────────────────────
+  // MD3 spec: 5 dp × 5 dp circle, no text, error background.
+  .ui-badge.v-badge--dot .v-badge__badge {
+    width: 5px;
+    min-width: 5px;
+    height: 5px;
+    padding: 0;
+    border-radius: 50%;
+  }
+}

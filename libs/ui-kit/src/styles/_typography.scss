@@ -1,0 +1,153 @@
+@use 'sass:map';
+
+// Typography Design Tokens — Single Source of Truth
+// ALL values defined here: $font-family, $font-weights, $type-scale, $weight-variants
+// TypeScript (theme/typography.ts) provides only types and typeClass() helper.
+// CSS classes: .text-{role}-{size}[-{weight-suffix}]
+//   e.g. .text-display-large, .text-body-medium-sb
+
+// Font Family
+$font-family: "'Open Sans Variable', sans-serif";
+
+// Font Weights
+$font-weights: (
+  light: 300,
+  regular: 400,
+  semibold: 600,
+  bold: 700,
+);
+$weight-variants: (
+  'lt': light,
+  'sb': semibold,
+  'bd': bold,
+);
+
+// Type Scale (non-regular weights always use letter-spacing: 0 per AH Design System)
+$type-scale: (
+  display: (
+    large: (
+      font-size: 3.5625rem,
+      letter-spacing: -0.0156rem,
+      line-height: 4rem,
+    ),
+    medium: (
+      font-size: 2.8125rem,
+      letter-spacing: 0,
+      line-height: 3.25rem,
+    ),
+    small: (
+      font-size: 2.25rem,
+      letter-spacing: 0,
+      line-height: 2.75rem,
+    ),
+  ),
+  headline: (
+    large: (
+      font-size: 2rem,
+      letter-spacing: 0,
+      line-height: 2.5rem,
+    ),
+    medium: (
+      font-size: 1.75rem,
+      letter-spacing: 0,
+      line-height: 2.25rem,
+    ),
+    small: (
+      font-size: 1.5rem,
+      letter-spacing: 0,
+      line-height: 2rem,
+    ),
+  ),
+  title: (
+    large: (
+      font-size: 1.375rem,
+      letter-spacing: 0,
+      line-height: 1.75rem,
+    ),
+    medium: (
+      font-size: 1rem,
+      letter-spacing: 0,
+      line-height: 1.5rem,
+    ),
+    small: (
+      font-size: 0.875rem,
+      letter-spacing: 0,
+      line-height: 1.25rem,
+    ),
+  ),
+  label: (
+    large: (
+      font-size: 0.875rem,
+      letter-spacing: 0,
+      line-height: 1.25rem,
+    ),
+    medium: (
+      font-size: 0.75rem,
+      letter-spacing: 0,
+      line-height: 1rem,
+    ),
+    small: (
+      font-size: 0.6875rem,
+      letter-spacing: 0,
+      line-height: 1rem,
+    ),
+    extra-small: (
+      font-size: 0.625rem,
+      letter-spacing: 0,
+      line-height: 0.875rem,
+    ),
+  ),
+  body: (
+    large: (
+      font-size: 1rem,
+      letter-spacing: 0.0313rem,
+      line-height: 1.5rem,
+    ),
+    medium: (
+      font-size: 0.875rem,
+      letter-spacing: 0.0156rem,
+      line-height: 1.25rem,
+    ),
+    small: (
+      font-size: 0.75rem,
+      letter-spacing: 0.025rem,
+      line-height: 1rem,
+    ),
+  ),
+);
+
+// Mixin: emit font properties (ONLY place that outputs CSS)
+// Called by overrides loop and other SCSS partials:
+//   @include typography.text-style('label', 'large');
+//   @include typography.text-style('body', 'medium', 'semibold');
+@mixin text-style($role, $size, $weight: regular) {
+  $props: map.get(map.get($type-scale, $role), $size);
+
+  font-family: #{$font-family} !important;
+  font-size: map.get($props, font-size) !important;
+  font-weight: map.get($font-weights, $weight) !important;
+  line-height: map.get($props, line-height) !important;
+
+  @if $weight == regular {
+    letter-spacing: map.get($props, letter-spacing) !important;
+  } @else {
+    letter-spacing: 0 !important;
+  }
+}
+
+// Generated utility classes
+@mixin overrides {
+  @each $role, $sizes in $type-scale {
+    @each $size, $_props in $sizes {
+      .text-#{$role}-#{$size} {
+        @include text-style($role, $size);
+      }
+
+      @each $suffix, $weight-key in $weight-variants {
+        .text-#{$role}-#{$size}-#{$suffix} {
+          @include text-style($role, $size, $weight-key);
+        }
+      }
+    }
+  }
+}

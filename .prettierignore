@@ -1,0 +1,27 @@
+# Dependencies
+node_modules
+vendor
+
+# Build outputs
+dist
+build
+public/build
+public/hot
+
+# Coverage
+coverage
+
+# Cache
+.vite
+.nx/cache
+.nx/workspace-data
+
+# Laravel
+storage
+bootstrap/cache
+
+# Docker
+docker
+
+# Logs
+*.log
