@@ -1,12 +1,14 @@
 <template>
-  <v-text-field
+  <VTextField
     v-bind="$attrs"
     type="date">
     <slot />
-  </v-text-field>
+  </VTextField>
 </template>
 
 <script setup lang="ts">
+import { VTextField } from 'vuetify/components';
+
 defineOptions({
   name: 'DatePicker',
   inheritAttrs: false,

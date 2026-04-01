@@ -42,6 +42,10 @@ class HandleInertiaRequests extends Middleware
                     'name' => $request->user()->name,
                     'email' => $request->user()->email,
                     'avatar' => $request->user()->avatar,
+                    'provisioning_source' => $request->user()->provisioning_source,
+                    'entra_groups' => $request->user()->entra_groups,
+                    'entra_roles' => $request->user()->entra_roles,
+                    'allowed_pdv_codes' => $request->user()->allowed_pdv_codes,
                 ] : null,
             ],
             'flash' => [

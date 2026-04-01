@@ -1,9 +1,21 @@
 #!/usr/bin/env bash
 set -e
 
+ensure_laravel_permissions() {
+    mkdir -p /var/www/html/storage/logs /var/www/html/bootstrap/cache
+    touch /var/www/html/storage/logs/laravel.log
+
+    chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache 2>/dev/null || true
+    chmod -R ug+rwX /var/www/html/storage /var/www/html/bootstrap/cache 2>/dev/null || true
+    chmod 664 /var/www/html/storage/logs/laravel.log 2>/dev/null || true
+}
+
 # Ensure VS Code server directory has correct permissions
 mkdir -p /var/www/.vscode-server
 chown -R www-data:www-data /var/www/.vscode-server 2>/dev/null || true
+
+# Ensure Laravel writable paths are always usable by php-fpm worker user.
+ensure_laravel_permissions
 
 # If command is passed (e.g., from dev container), execute it
 if [ $# -gt 0 ]; then
@@ -20,6 +32,12 @@ until php -r "new PDO('pgsql:host=postgres;port=5432;dbname=showcase', 'postgres
 done
 
 echo "PostgreSQL is ready!"
+
+# Ensure APP_KEY exists for encrypted services (sessions, cookies, etc.).
+if ! grep -q '^APP_KEY=base64:' .env 2>/dev/null; then
+    echo "APP_KEY missing or empty, generating application key..."
+    php artisan key:generate --force
+fi
 
 # Marker file to track if initial setup is done
 INIT_MARKER="/var/www/.docker-initialized"
@@ -40,6 +58,8 @@ else
     echo "Composer dependencies already up to date"
 fi
 
+ensure_laravel_permissions
+
 # Run migrations only if needed (first run or dependencies changed)
 if [ ! -f "$INIT_MARKER" ] || [ "$NEEDS_INIT" = true ]; then
     echo "Running migrations..."
@@ -56,6 +76,8 @@ if [ ! -f "$INIT_MARKER" ] || [ "$NEEDS_INIT" = true ]; then
 else
     echo "Application already initialized, skipping migrations and cache clearing"
 fi
+
+ensure_laravel_permissions
 
 # Cache config for production
 if [ "$APP_ENV" = "production" ]; then

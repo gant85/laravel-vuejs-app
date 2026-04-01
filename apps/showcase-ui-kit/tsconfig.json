@@ -17,8 +17,7 @@
     "noFallthroughCasesInSwitch": true,
     "baseUrl": ".",
     "paths": {
-      "@/*": ["./src/*"],
-      "@reference-app-laravel-vue/ui-kit": ["../../libs/ui-kit/src"]
+      "@/*": ["./src/*"]
     },
     "types": ["vite/client", "node"]
   },

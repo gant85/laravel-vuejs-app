@@ -3,10 +3,7 @@ import { ref, computed } from 'vue';
 import { usePage } from '@inertiajs/vue3';
 import AppLayout from '@/Layouts/AppLayout.vue';
 import {
-  Badge,
   Button,
-  Divider,
-  Label,
   Panel,
   NotificationCard,
   NotificationCardTypeEnum as NotificationCardType,
@@ -48,25 +45,25 @@ const stats = computed(() => [
   {
     title: 'Total Users',
     value: props.statistics?.total_users?.toString() || '0',
-    icon: 'group',
+    icon: 'mdi-account-multiple',
     color: 'primary',
   },
   {
     title: 'Total Posts',
     value: props.statistics?.total_posts?.toString() || '0',
-    icon: 'article',
+    icon: 'mdi-post',
     color: 'secondary',
   },
   {
     title: 'Active Users',
     value: props.statistics?.active_users?.toString() || '0',
-    icon: 'verified_user',
+    icon: 'mdi-account-check',
     color: 'success',
   },
   {
     title: 'Growth Rate',
     value: `${props.statistics?.growth_rate || 0}%`,
-    icon: 'trending_up',
+    icon: 'mdi-trending-up',
     color: 'info',
   },
 ]);
@@ -76,14 +73,22 @@ const notifications = ref([
   {
     type: NotificationCardType.Success,
     title: 'Welcome!',
-    text: 'You have successfully logged in.',
+    message: 'You have successfully logged in',
+    timestamp: 'Just now',
   },
   {
     type: NotificationCardType.Info,
     title: 'System Info',
-    text: 'Dashboard loaded successfully.',
+    message: 'Dashboard loaded successfully',
+    timestamp: '1 min ago',
   },
 ]);
+
+const messageBarVisible = ref(true);
+
+const dismissNotification = (index: number) => {
+  notifications.value.splice(index, 1);
+};
 </script>
 
 <template>
@@ -108,7 +113,7 @@ const notifications = ref([
                   <v-icon
                     size="small"
                     color="white">
-                    calendar_today
+                    mdi-calendar-today
                   </v-icon>
                   {{
                     new Date().toLocaleDateString('en-US', {
@@ -124,7 +129,7 @@ const notifications = ref([
                 size="120"
                 color="white"
                 class="opacity-25">
-                dashboard
+                mdi-view-dashboard
               </v-icon>
             </div>
           </v-card-text>
@@ -165,76 +170,57 @@ const notifications = ref([
       </v-col>
     </v-row>
 
-    <!-- Quick actions and notifications powered by ui-kit -->
+    <!-- UI Kit Components Demo -->
     <v-row class="mt-4">
+      <!-- Panel Component -->
       <v-col
         cols="12"
         md="6">
-        <Panel>
-          <template #title>
-            <div class="d-flex align-center ga-2">
-              <v-icon size="18">bolt</v-icon>
-              <span>Quick Actions</span>
-              <Badge dot />
-            </div>
-          </template>
-
+        <Panel
+          title="Quick Actions"
+          icon="mdi-lightning-bolt"
+          :collapsible="true">
           <div class="d-flex flex-column gap-2 pa-4">
             <Button
               variant="elevated"
               color="primary"
-              prepend-icon="person_add">
+              prepend-icon="mdi-account-plus">
               Add New User
             </Button>
             <Button
               variant="outlined"
               color="secondary"
-              prepend-icon="description">
+              prepend-icon="mdi-file-document">
               Generate Report
             </Button>
             <Button
               variant="tonal"
               color="success"
-              prepend-icon="check_circle">
+              prepend-icon="mdi-check-circle">
               Complete Task
             </Button>
-
-            <Divider class="my-3" />
-
-            <div class="d-flex align-center gap-2">
-              <Label
-                text="Priority"
-                color="important"
-                appearance="tint" />
-              <Label
-                text="Healthy"
-                color="success"
-                appearance="filled" />
-            </div>
           </div>
         </Panel>
       </v-col>
 
+      <!-- Notifications -->
       <v-col
         cols="12"
         md="6">
-        <Panel>
-          <template #title>
-            <div class="d-flex align-center ga-2">
-              <v-icon size="18">notifications</v-icon>
-              <span>Recent Notifications</span>
-            </div>
-          </template>
-
+        <Panel
+          title="Recent Notifications"
+          icon="mdi-bell"
+          :collapsible="true">
           <div class="pa-4">
             <NotificationCard
               v-for="(notification, index) in notifications"
               :key="index"
               :type="notification.type"
               :title="notification.title"
-              class="mb-3">
-              <p class="text-body-2 mb-0">{{ notification.text }}</p>
-            </NotificationCard>
+              :message="notification.message"
+              :timestamp="notification.timestamp"
+              class="mb-3"
+              @dismiss="dismissNotification(index)" />
           </div>
         </Panel>
       </v-col>
@@ -243,14 +229,10 @@ const notifications = ref([
     <!-- Progress Indicators -->
     <v-row class="mt-4">
       <v-col cols="12">
-        <Panel>
-          <template #title>
-            <div class="d-flex align-center ga-2">
-              <v-icon size="18">monitoring</v-icon>
-              <span>System Resources</span>
-            </div>
-          </template>
-
+        <Panel
+          title="System Resources"
+          icon="mdi-chart-line"
+          :collapsible="true">
           <div class="pa-4">
             <div class="mb-4">
               <div class="d-flex justify-space-between mb-2">
@@ -286,12 +268,15 @@ const notifications = ref([
       </v-col>
     </v-row>
 
-    <!-- Global alert powered by ui-kit -->
+    <!-- Message Bar Demo -->
     <v-row class="mt-4">
       <v-col cols="12">
         <MessageBar
+          v-model="messageBarVisible"
           :type="MessageBarType.Info"
-          text="Dashboard uses shared ui-kit components to keep a consistent visual language across apps." />
+          message="This is a demo dashboard showcasing UI-kit components from the shared library"
+          action="Learn More"
+          @action="() => console.log('Learn more clicked')" />
       </v-col>
     </v-row>
   </AppLayout>

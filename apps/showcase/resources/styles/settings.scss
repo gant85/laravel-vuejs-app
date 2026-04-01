@@ -4,7 +4,7 @@ $button-border-radius: 2px;
 $card-border-radius: 1px;
 $body-font-family: 'Open Sans Variable', sans-serif;
 
-@use 'vuetify/settings' with (
+@use '../../node_modules/vuetify/_settings' with (
   $body-font-family: $body-font-family,
   $button-border-radius: $button-border-radius,
   $card-border-radius: $card-border-radius

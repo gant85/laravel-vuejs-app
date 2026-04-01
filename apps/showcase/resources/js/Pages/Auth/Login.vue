@@ -1,17 +1,21 @@
 <script setup lang="ts">
-import { Head } from '@inertiajs/vue3';
-import {
-  Badge,
-  Button,
-  Divider,
-  MessageBar,
-  MessageBarTypeEnum as MessageBarType,
-} from '@reference-app-laravel-vue/ui-kit';
+import { computed } from 'vue';
+import { Head, usePage } from '@inertiajs/vue3';
+
+interface PageProps {
+  errors?: {
+    error?: string;
+  };
+  [key: string]: unknown;
+}
 
 // Redirect to Azure login on component mount
 const loginWithAzure = () => {
   window.location.href = '/auth/azure';
 };
+
+const page = usePage<PageProps>();
+const authError = computed(() => page.props.errors?.error ?? '');
 </script>
 
 <template>
@@ -38,61 +42,64 @@ const loginWithAzure = () => {
                 <v-icon
                   size="large"
                   class="mr-2">
-                  local_hospital
+                  mdi-hospital-building
                 </v-icon>
                 Showcase Application
               </v-card-title>
 
               <v-card-text class="pa-8">
-                <MessageBar
-                  :type="MessageBarType.Info"
-                  text="Authentication is handled with Microsoft Entra ID."
-                  class="mb-4" />
+                <v-alert
+                  v-if="authError"
+                  type="error"
+                  variant="tonal"
+                  class="mb-6">
+                  {{ authError }}
+                </v-alert>
 
                 <div class="text-center mb-6">
                   <v-icon
                     size="80"
                     color="primary">
-                    shield_lock
+                    mdi-shield-lock
                   </v-icon>
-                  <h2 class="text-h6 mt-4 mb-2">Secure Login</h2>
+                  <h2 class="text-h6 mt-4 mb-2">Secure Entra Login</h2>
                   <p class="text-body-2 text-medium-emphasis">
-                    Sign in with your Azure Entra ID account to continue
+                    Sign in with your Microsoft Entra ID account to continue
                   </p>
                 </div>
 
-                <Divider class="mb-6" />
+                <v-divider class="mb-6" />
 
-                <Button
+                <v-btn
                   block
                   size="large"
                   color="primary"
                   variant="flat"
-                  prepend-icon="login"
+                  prepend-icon="mdi-microsoft"
                   @click="loginWithAzure">
                   Sign in with Microsoft
-                </Button>
+                </v-btn>
 
                 <div class="text-center mt-6">
-                  <Badge content="Secure">
-                    <v-chip
-                      size="small"
-                      variant="outlined"
-                      color="primary">
-                      <v-icon
-                        start
-                        size="small">
-                        verified_user
-                      </v-icon>
-                      Azure Entra ID Protected
-                    </v-chip>
-                  </Badge>
+                  <v-chip
+                    size="small"
+                    variant="outlined"
+                    color="primary">
+                    <v-icon
+                      start
+                      size="small">
+                      mdi-shield-check
+                    </v-icon>
+                    Microsoft Entra ID Protected
+                  </v-chip>
                 </div>
               </v-card-text>
 
               <v-card-actions class="bg-grey-lighten-4 pa-4">
                 <v-spacer />
-                <small class="text-caption text-medium-emphasis"> Powered by Azure Entra ID </small>
+                <small class="text-caption text-medium-emphasis">
+                  Powered by Microsoft Entra ID
+                </small>
                 <v-spacer />
               </v-card-actions>
             </v-card>

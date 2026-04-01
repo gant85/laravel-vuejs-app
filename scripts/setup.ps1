@@ -115,13 +115,16 @@ Write-Host ""
 Write-Host " Installing PHP dependencies in container..."
 docker exec reference-app-laravel-vue-php composer install --no-interaction
 
+Write-Host " Ensuring Laravel writable directory permissions..."
+docker exec reference-app-laravel-vue-php sh -lc "mkdir -p storage/logs bootstrap/cache && touch storage/logs/laravel.log && chown -R www-data:www-data storage bootstrap/cache && chmod -R ug+rwX storage bootstrap/cache && chmod 664 storage/logs/laravel.log"
+
 Write-Host ""
 Write-Host " Migrating database..."
-docker exec reference-app-laravel-vue-php php artisan migrate --path=vendor/laravel/telescope/database/migrations
+docker exec --user www-data reference-app-laravel-vue-php php artisan migrate --path=vendor/laravel/telescope/database/migrations
 
-#Write-Host ""
-#Write-Host " Generating application key..."
-#docker exec reference-app-laravel-vue-php php artisan key:generate
+Write-Host ""
+Write-Host " Generating application key..."
+docker exec --user www-data reference-app-laravel-vue-php php artisan key:generate --force
 
 Write-Host ""
 Write-Host "  Setting up database..."
@@ -130,7 +133,10 @@ Write-Host "  Setting up database..."
 docker exec reference-app-laravel-vue-postgres psql -U postgres -c 'CREATE DATABASE showcase;'
 
 # Run migrations
-docker exec reference-app-laravel-vue-php php artisan migrate --force
+docker exec --user www-data reference-app-laravel-vue-php php artisan migrate --force
+
+Write-Host " Re-applying writable directory permissions..."
+docker exec reference-app-laravel-vue-php sh -lc "mkdir -p storage/logs bootstrap/cache && touch storage/logs/laravel.log && chown -R www-data:www-data storage bootstrap/cache && chmod -R ug+rwX storage bootstrap/cache && chmod 664 storage/logs/laravel.log"
 
 Write-Host ""
 Write-Host "======================================"

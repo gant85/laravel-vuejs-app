@@ -1,4 +1,4 @@
-# Development Guide
+    # Development Guide
 
 > **Quick reference** for setting up, developing, testing, and debugging the Showcase application
 
@@ -109,7 +109,12 @@ docker exec reference-app-laravel-vue-php php artisan migrate
 
 # (Optional) Seed database with demo data
 docker exec reference-app-laravel-vue-php php artisan db:seed
+
+# Ensure writable directories are owned by php-fpm user (needed for fresh installs)
+docker exec reference-app-laravel-vue-php sh -lc "mkdir -p storage/logs bootstrap/cache && touch storage/logs/laravel.log && chown -R www-data:www-data storage bootstrap/cache && chmod -R ug+rwX storage bootstrap/cache && chmod 664 storage/logs/laravel.log"
 ```
+
+If you run artisan commands manually with `docker exec`, prefer `--user www-data` to avoid root-owned files in `storage`.
 
 ### 6. Start Development Server
 
@@ -128,6 +133,51 @@ pnpm --filter @reference-app-laravel-vue/showcase dev
 - **Jaeger UI**: http://localhost:16686
 - **PostgreSQL**: localhost:5432 (user: postgres, password: postgres)
 - **Redis**: localhost:6379
+
+---
+
+## Create a New App from Showcase Template
+
+Use the scaffold script to create a new app under `apps/` starting from `apps/showcase`.
+
+### Windows (PowerShell)
+
+```powershell
+# Create apps/clinic-portal from apps/showcase
+pnpm app:create -- -AppName clinic-portal
+
+# Replace existing target directory if needed
+pnpm app:create -- -AppName clinic-portal -Force
+```
+
+### macOS / Linux (Bash)
+
+```bash
+# Create apps/clinic-portal from apps/showcase
+pnpm app:create:sh -- clinic-portal
+
+# Replace existing target directory if needed
+pnpm app:create:sh -- clinic-portal --force
+```
+
+### What the script does
+
+1. Copies `apps/showcase` to `apps/<app-name>`.
+2. Excludes generated/runtime folders (`node_modules`, `vendor`, `public/build`, runtime cache/log folders).
+3. Creates `apps/<app-name>/.env` from `.env.example`.
+4. Updates `apps/<app-name>/package.json` name to `@reference-app-laravel-vue/<app-name>`.
+5. Adds all packages from `libs/*` as `workspace:*` dependencies in the new app package.
+6. Updates `apps/<app-name>/composer.json` project name.
+
+### After generation
+
+```bash
+# Refresh workspace links
+pnpm install
+
+# Run dev server for the new app package
+pnpm --filter @reference-app-laravel-vue/<app-name> dev
+```
 
 ---
 

@@ -1,10 +1,12 @@
-import { defineConfig } from 'vite';
-import laravel from 'laravel-vite-plugin';
 import vue from '@vitejs/plugin-vue';
+import { fileURLToPath, URL } from 'node:url';
+import { defineConfig } from 'vite';
 import vuetify from 'vite-plugin-vuetify';
 import viteCompression from 'vite-plugin-compression';
 import { imagetools } from 'vite-imagetools';
-import { fileURLToPath, URL } from 'node:url';
+import laravel from 'laravel-vite-plugin';
+
+const workspaceNodeModules = fileURLToPath(new URL('../../node_modules', import.meta.url));
 
 export default defineConfig({
   plugins: [
@@ -12,14 +14,7 @@ export default defineConfig({
       input: ['resources/js/app.ts'],
       refresh: true,
     }),
-    vue({
-      template: {
-        transformAssetUrls: {
-          base: null,
-          includeAbsolute: false,
-        },
-      },
-    }),
+    vue(),
     vuetify({
       autoImport: true,
       styles: {
@@ -47,6 +42,16 @@ export default defineConfig({
       '@reference-app-laravel-vue/ui-kit': fileURLToPath(
         new URL('../../libs/ui-kit/src', import.meta.url)
       ),
+    },
+  },
+  css: {
+    preprocessorOptions: {
+      scss: {
+        loadPaths: [workspaceNodeModules],
+      },
+      sass: {
+        loadPaths: [workspaceNodeModules],
+      },
     },
   },
   server: {

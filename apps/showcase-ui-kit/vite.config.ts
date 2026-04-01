@@ -5,6 +5,8 @@ import vuetify from 'vite-plugin-vuetify';
 import viteCompression from 'vite-plugin-compression';
 import { imagetools } from 'vite-imagetools';
 
+const workspaceNodeModules = fileURLToPath(new URL('../../node_modules', import.meta.url));
+
 export default defineConfig({
   plugins: [
     vue(),
@@ -35,6 +37,16 @@ export default defineConfig({
       '@reference-app-laravel-vue/ui-kit': fileURLToPath(
         new URL('../../libs/ui-kit/src', import.meta.url)
       ),
+    },
+  },
+  css: {
+    preprocessorOptions: {
+      scss: {
+        loadPaths: [workspaceNodeModules],
+      },
+      sass: {
+        loadPaths: [workspaceNodeModules],
+      },
     },
   },
   server: {
