@@ -42,18 +42,36 @@ class AzureAuthController
 
         Log::debug('logged in Azure user', ['user' => $azureUser]);
 
-        // Find or create user
-        $user = User::updateOrCreate(
-            ['azure_id' => $azureUser->getId()],
-            [
-                'name' => $azureUser->getName() ?? $azureUser->getEmail(),
-                'email' => $azureUser->getEmail(),
-                'avatar' => $azureUser->getAvatar(),
-                'azure_token' => $azureUser->token,
-                'azure_refresh_token' => $azureUser->refreshToken,
-                'email_verified_at' => now(), // Azure users are pre-verified
-            ]
-        );
+        $email = $azureUser->getEmail();
+        $azureId = $azureUser->getId();
+
+        // 1. Prioritize linking by azure_id
+        $user = User::where('azure_id', $azureId)->first();
+
+        // 2. Fallback to email for admin pre-provisioned records
+        if (! $user && $email) {
+            $user = User::where('email', $email)->first();
+        }
+
+        // 3. If User Does Not Exist (New user in portal) -> JIT Provisioning
+        if (! $user) {
+            $user = new User();
+            $user->email = $email;
+            $user->provisioning_source = 'jit';
+        }
+
+        $user->azure_id = $azureId;
+        $user->name = $azureUser->getName() ?? $email;
+        $user->avatar = $azureUser->getAvatar();
+        $user->azure_token = $azureUser->token;
+        $user->azure_refresh_token = $azureUser->refreshToken;
+        $user->email_verified_at = $user->email_verified_at ?? now();
+        
+        // Save Entra authorization snapshot
+        $user->entra_roles = $azureUser->user['roles'] ?? [];
+        $user->entra_groups = $azureUser->user['groups'] ?? [];
+        
+        $user->save();
 
         Auth::login($user, true);
 

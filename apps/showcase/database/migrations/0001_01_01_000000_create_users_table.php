@@ -16,7 +16,17 @@ return new class extends Migration
             $table->string('name');
             $table->string('email')->unique();
             $table->timestamp('email_verified_at')->nullable();
-            $table->string('password');
+            $table->string('password')->nullable();
+            
+            // Azure/Entra ID fields
+            $table->string('azure_id')->nullable()->unique();
+            $table->text('azure_token')->nullable();
+            $table->text('azure_refresh_token')->nullable();
+            $table->string('avatar')->nullable();
+            $table->json('entra_groups')->nullable();
+            $table->json('entra_roles')->nullable();
+            $table->string('provisioning_source')->default('jit'); // e.g. jit or proactive
+
             $table->rememberToken();
             $table->timestamps();
         });

@@ -23,6 +23,9 @@ class User extends Authenticatable
         'azure_token',
         'azure_refresh_token',
         'avatar',
+        'entra_groups',
+        'entra_roles',
+        'provisioning_source',
     ];
 
     /**
@@ -46,6 +49,8 @@ class User extends Authenticatable
     {
         return [
             'email_verified_at' => 'datetime',
+            'entra_groups' => 'array',
+            'entra_roles' => 'array',
         ];
     }
 }

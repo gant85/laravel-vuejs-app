@@ -10,7 +10,9 @@ The application uses **Laravel Socialite** with the **Microsoft provider** to en
 
 ✅ **Single Sign-On (SSO)** - Login with Microsoft Azure Entra ID  
 ✅ **OAuth2/OIDC Flow** - Secure authentication flow  
-✅ **User Provisioning** - Automatic user creation on first login  
+✅ **User Provisioning (JIT)** - Automatic user creation on first login  
+✅ **Proactive Provisioning** - Admin-initiated explicit Graph API invitations  
+✅ **Strategic RBAC** - Stores `entra_groups` and `entra_roles` tracking App Roles and Memberships
 ✅ **Token Management** - Access and refresh tokens stored securely  
 ✅ **Profile Sync** - Name, email, and avatar synced from Azure  
 ✅ **OpenTelemetry Tracing** - Full observability for auth flows  
@@ -100,17 +102,20 @@ AZURE_REDIRECT_URI=https://your-production-domain.com/auth/azure/callback
 
 ### 2. Verify Database Migration
 
-The migration adds these fields to `users` table:
+The baseline migration `0001_01_01_000000_create_users_table.php` has been configured to include:
 
 ```php
 $table->string('azure_id')->nullable()->unique();
-$table->string('azure_token')->nullable();
-$table->string('azure_refresh_token')->nullable();
-$table->text('avatar')->nullable();
-$table->string('password')->nullable()->change(); // Password not required for Azure users
+$table->text('azure_token')->nullable();
+$table->text('azure_refresh_token')->nullable();
+$table->string('avatar')->nullable();
+$table->json('entra_groups')->nullable();
+$table->json('entra_roles')->nullable();
+$table->string('provisioning_source')->default('jit');
+$table->string('password')->nullable(); // Password not required for Azure users
 ```
 
-Migration already run: `2026_01_15_200919_add_azure_fields_to_users_table`
+All fragmented user additions have been consolidated into the bootstrap table structure for clean CI deployments.
 
 ---
 
@@ -151,8 +156,35 @@ Updated to include Azure-specific fields:
 protected $fillable = [
     'name', 'email', 'password',
     'azure_id', 'azure_token', 'azure_refresh_token', 'avatar',
+    'entra_groups', 'entra_roles', 'provisioning_source',
 ];
 ```
+
+The `entra_groups` and `entra_roles` properties are automatically cast to JSON arrays:
+
+```php
+protected function casts(): array
+{
+    return [
+        'entra_groups' => 'array',
+        'entra_roles' => 'array',
+    ];
+}
+```
+
+#### 4. Microsoft Graph Service & Admin Controllers
+
+**Files**:
+
+- `app/Services/MicrosoftGraphService.php`
+- `app/Http/Controllers/AdminUserController.php`
+
+**Features**:
+Provides the API interactions mapped to Entra ID Strategy A (One App per API registration) acting over App-Only Token via Client Credentials to control Entra groups efficiently:
+
+- App-Only Microsoft Graph Token mapping locally.
+- Sending direct email invitations from Entra ID (`MicrosoftGraphService::inviteUser()`).
+- Adding/Removing backend group memberships programmatically directly on Azure side.
 
 #### 4. Configuration
 
@@ -443,11 +475,13 @@ All authentication operations are traced:
 ### Backend
 
 - ✅ `app/Http/Controllers/Auth/AzureAuthController.php` (created)
+- ✅ `app/Http/Controllers/AdminUserController.php` (created)
+- ✅ `app/Services/MicrosoftGraphService.php` (created)
 - ✅ `app/Providers/AzureAuthServiceProvider.php` (created)
 - ✅ `app/Models/User.php` (updated)
-- ✅ `database/migrations/2026_01_15_200919_add_azure_fields_to_users_table.php` (created)
+- ✅ `database/migrations/0001_01_01_000000_create_users_table.php` (updated and consolidated)
 - ✅ `app/Http/Middleware/HandleInertiaRequests.php` (updated)
-- ✅ `routes/web.php` (updated)
+- ✅ `routes/web.php` (updated to include `api/admin/users`)
 - ✅ `config/services.php` (updated)
 - ✅ `bootstrap/app.php` (updated)
 - ✅ `.env.example` (updated)
