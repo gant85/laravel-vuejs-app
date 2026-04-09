@@ -22,6 +22,7 @@ class AdminUserController
     public function index(): JsonResponse
     {
         $users = User::all();
+
         return response()->json($users);
     }
 
@@ -42,10 +43,10 @@ class AdminUserController
         $invitation = $this->graphService->inviteUser(
             $validated['email'],
             $validated['name'],
-            config('app.url') . '/login'
+            config('app.url').'/login'
         );
 
-        if (!$invitation) {
+        if (! $invitation) {
             return response()->json(['error' => 'Failed to invite user via Entra ID'], 500);
         }
 
@@ -56,20 +57,20 @@ class AdminUserController
             $this->graphService->assignUserToGroup($invitedUserId, $validated['base_group']);
 
             // 3. Assign order group if selected
-            if (!empty($validated['order_group'])) {
+            if (! empty($validated['order_group'])) {
                 $this->graphService->assignUserToGroup($invitedUserId, $validated['order_group']);
             }
         }
 
         // 4. Save user locally (Bypasses future JIT check)
-        $user = new User();
+        $user = new User;
         $user->email = $validated['email'];
         $user->name = $validated['name'];
         $user->azure_id = $invitedUserId;
         $user->provisioning_source = 'proactive';
         $user->entra_groups = array_filter([
             $validated['base_group'],
-            $validated['order_group'] ?? null
+            $validated['order_group'] ?? null,
         ]);
 
         $user->save();
