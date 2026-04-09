@@ -1,20 +1,416 @@
 # Azure Entra ID Authentication Implementation
 
-This document describes the complete Azure Entra ID (formerly Azure Active Directory) authentication implementation for the Showcase Application.
+This document describes the complete Microsoft Entra ID (formerly Azure Active Directory) authentication implementation for the Showcase Application, following **Strategy A** (one API App Registration per domain) from the IT Architecture Guidelines.
 
 ## Overview
 
-The application uses **Laravel Socialite** with the **Microsoft provider** to enable OAuth2/OIDC authentication via Azure Entra ID. Users can log in with their Microsoft work or school accounts.
+The application uses **Laravel Socialite** with the **Microsoft provider** to implement an OIDC Authorization Code + PKCE flow. Laravel acts as the **BFF (Backend for Frontend)**: it exchanges the auth code for access/refresh tokens, reads identity claims (roles, groups) directly from the JWT, performs JIT user provisioning, and issues an HttpOnly session cookie to the Vue SPA. The SPA never sees raw tokens.
+
+## Authentication Strategy
+
+Following **Strategy A — One API App Registration per Domain**:
+
+- The BFF has its own **API App Registration** (resource) that defines `access_as_user` scope and app roles.
+- The BFF is also registered as a **client app** to authenticate users.
+- App roles (e.g. `Hospital.User`, `SuperUser`) are defined on the API app registration and assigned to users/groups via the enterprise application.
+- Roles are read from the JWT `roles` claim; group memberships from the `groups` claim — no extra Graph API call needed per request.
 
 ## Features
 
-✅ **Single Sign-On (SSO)** - Login with Microsoft Azure Entra ID  
-✅ **OAuth2/OIDC Flow** - Secure authentication flow  
-✅ **User Provisioning** - Automatic user creation on first login  
-✅ **Token Management** - Access and refresh tokens stored securely  
-✅ **Profile Sync** - Name, email, and avatar synced from Azure  
-✅ **OpenTelemetry Tracing** - Full observability for auth flows  
-✅ **Session Management** - Secure logout with session invalidation
+✅ **Single Sign-On (SSO)** — Login with Microsoft Entra ID (OIDC)  
+✅ **JIT Provisioning** — Automatic user creation on first login  
+✅ **Admin Pre-Provisioning** — Administrator can create users before their first login  
+✅ **JWT Claims Extraction** — `roles` and `groups` decoded from the access token at login  
+✅ **Token Shield** — Access/Refresh tokens stored server-side only; SPA receives only HttpOnly session cookie  
+✅ **Automatic Token Refresh** — BFF transparently refreshes expired access tokens  
+✅ **Profile Sync** — Name, email, and avatar synced from Entra ID  
+✅ **OpenTelemetry Tracing** — Full observability for all auth flows  
+✅ **Session Security** — Secure logout with session invalidation and token regeneration
+
+---
+
+## Login Sequence (FEAT-LOGIN-USERS)
+
+```
+User → Browser → GET /login
+              → GET /auth/azure  (BFF redirects to Entra ID OIDC endpoint)
+User authenticates with Entra ID credentials
+Entra ID → BFF  GET /auth/azure/callback?code=...
+BFF → Entra ID  Exchange code for Access Token + Refresh Token + ID Token
+BFF: decode JWT → extract roles[], groups[]
+BFF → DB: does user exist? (azure_id lookup)
+  ├─ YES (admin pre-provisioning): update profile + refresh claims
+  └─ NO  (first login, JIT):       create new user record
+BFF: store Refresh Token in DB (encrypted at rest)
+BFF → Browser: Set-Cookie: laravel_session (HttpOnly)
+Browser → Inertia SPA: authenticated, session cookie in subsequent requests
+```
+
+See also: [sequence-feat-login-users.puml](../sequence-feat-login-users.puml)
+
+---
+
+## Prerequisites
+
+1. **Azure Account** — Access to Azure Portal
+2. **Entra ID Tenant** — Organisation's Azure AD tenant
+3. **Two App Registrations** — One for the BFF client, one for the API resource (Strategy A)
+
+---
+
+## Azure Portal Setup
+
+### Step 1: Create the API App Registration (Resource)
+
+This registration defines the API surface, scopes, and app roles.
+
+1. Azure Portal → **Microsoft Entra ID** → **App registrations** → **New registration**
+2. Name: `Showcase-API`
+3. Supported account types: `Accounts in this organizational directory only (Single tenant)`
+4. Click **Register**
+5. Go to **Expose an API** → Set Application ID URI: `api://showcase-api`
+6. Add scope:
+   - Scope name: `access_as_user`
+   - Who can consent: `Admins and users`
+   - Admin consent display name: `Access Showcase API as the signed-in user`
+7. Go to **App roles** and create the roles your application needs, e.g.:
+   - `Hospital.User` — allowed member types: **Users/Groups + Applications**
+   - `SuperUser` — allowed member types: **Users/Groups + Applications**
+
+### Step 2: Create the BFF Client App Registration
+
+1. Azure Portal → **App registrations** → **New registration**
+2. Name: `Showcase-BFF`
+3. Supported account types: `Single tenant`
+4. Redirect URI (Web): `http://localhost:8000/auth/azure/callback`
+5. Click **Register**
+6. Go to **Certificates & secrets** → **New client secret** → copy the value immediately → `AZURE_CLIENT_SECRET`
+7. Go to **API permissions** → **Add a permission** → **My APIs** → `Showcase-API` → Delegated → `access_as_user`
+8. Also add **Microsoft Graph** → Delegated: `User.Read`, `profile`, `email`, `openid`
+9. Click **Grant admin consent**
+10. Copy: **Application (client) ID** → `AZURE_CLIENT_ID`, **Directory (tenant) ID** → `AZURE_TENANT_ID`
+
+### Step 3: Enable Group Claims (Optional)
+
+To populate the JWT `groups` claim:
+
+1. In the BFF app registration → **Token configuration** → **Add groups claim**
+2. Select **Security groups**, token types: **ID**, **Access**, **SAML**
+3. Click **Add**
+
+> ⚠️ If a user belongs to more than 200 groups, Entra will not inline the claim and you must call the Graph API. For most deployments, inline claims are sufficient.
+
+### Step 4: Assign Roles to Users/Groups
+
+In the **enterprise application** of `Showcase-API`:
+
+1. **Users and groups** → **Add user/group**
+2. Select the user or group → select the role (e.g. `Hospital.User`)
+3. Click **Assign**
+
+> Roles are always assigned on the **enterprise application** (service principal), never on the client app registration.
+
+---
+
+## Application Configuration
+
+### Environment Variables
+
+```env
+# Microsoft Entra ID — BFF Client Registration
+AZURE_CLIENT_ID=<BFF client app client-id>
+AZURE_CLIENT_SECRET=<BFF client app secret>
+AZURE_TENANT_ID=<directory tenant-id>
+AZURE_REDIRECT_URI=http://localhost:8000/auth/azure/callback
+```
+
+**Production:**
+
+```env
+AZURE_REDIRECT_URI=https://your-domain.com/auth/azure/callback
+```
+
+---
+
+## Database Schema
+
+### `users` table — Entra ID fields
+
+| Column                | Type    | Description                              |
+| --------------------- | ------- | ---------------------------------------- |
+| `azure_id`            | varchar | Entra object ID (unique per user)        |
+| `azure_token`         | text    | Current access token (server-side only)  |
+| `azure_refresh_token` | text    | Refresh token for transparent renewal    |
+| `avatar`              | text    | Profile picture URL from Entra ID        |
+| `entra_roles`         | json    | App role values from JWT `roles` claim   |
+| `entra_groups`        | json    | Group object-IDs from JWT `groups` claim |
+
+**Migrations**:
+
+- `2026_01_15_200919_add_azure_fields_to_users_table`
+- `2026_04_09_000000_add_entra_claims_to_users_table`
+
+---
+
+## Implementation Details
+
+### Backend Components
+
+#### 1. Authentication Controller
+
+**File**: `app/Http/Controllers/Auth/AzureAuthController.php`
+
+```
+redirectToAzure()        → redirect to Entra ID OIDC endpoint
+handleAzureCallback()    → exchange code for tokens, extract claims, JIT provision, issue session
+logout()                 → invalidate session, regenerate CSRF token
+decodeTokenClaims(jwt)   → base64-decode JWT payload to read roles + groups claims
+```
+
+**JIT vs Pre-provisioning logic**:
+
+```php
+$existingUser = User::where('azure_id', $azureUser->getId())->first();
+
+if ($existingUser) {
+    // Admin pre-provisioning path — update and refresh Entra claims
+    $existingUser->update([...entra_roles, entra_groups...]);
+} else {
+    // JIT provisioning path — create local record on first login
+    User::create([...entra_roles, entra_groups...]);
+}
+
+Auth::login($user, true); // Issue HttpOnly session cookie
+```
+
+**JWT claim extraction** (no Graph API call needed):
+
+```php
+private function decodeTokenClaims(string $jwt): array
+{
+    $parts = explode('.', $jwt);
+    $payload = base64_decode(strtr($parts[1], '-_', '+/'));
+    return json_decode($payload, true) ?? [];
+}
+// $roles  = $claims['roles']  ?? [];
+// $groups = $claims['groups'] ?? [];
+```
+
+#### 2. User Model
+
+**File**: `app/Models/User.php`
+
+```php
+protected $fillable = [
+    'name', 'email', 'password', 'azure_id',
+    'azure_token', 'azure_refresh_token', 'avatar',
+    'entra_groups', 'entra_roles',           // NEW
+];
+
+protected function casts(): array
+{
+    return [
+        'email_verified_at' => 'datetime',
+        'entra_groups'      => 'array',      // NEW
+        'entra_roles'       => 'array',      // NEW
+    ];
+}
+
+public function hasRole(string $role): bool { ... }
+public function inGroup(string $group): bool { ... }
+```
+
+#### 3. Shared Inertia Data
+
+**File**: `app/Http/Middleware/HandleInertiaRequests.php`
+
+Roles and groups are shared globally so every Vue page can access them:
+
+```php
+'auth' => [
+    'user' => $request->user() ? [
+        'id'           => $request->user()->id,
+        'name'         => $request->user()->name,
+        'email'        => $request->user()->email,
+        'avatar'       => $request->user()->avatar,
+        'entra_roles'  => $request->user()->entra_roles ?? [],   // NEW
+        'entra_groups' => $request->user()->entra_groups ?? [],  // NEW
+    ] : null,
+],
+```
+
+#### 4. Routes
+
+**File**: `routes/web.php`
+
+```php
+Route::get('/login', fn() => Inertia::render('Auth/Login'))->name('login');
+Route::get('/auth/azure', [AzureAuthController::class, 'redirectToAzure'])->name('azure.login');
+Route::get('/auth/azure/callback', [AzureAuthController::class, 'handleAzureCallback'])->name('azure.callback');
+Route::post('/logout', [AzureAuthController::class, 'logout'])->name('logout');
+
+Route::middleware(['auth'])->group(function () {
+    Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
+});
+```
+
+### Frontend Components
+
+#### Login Page
+
+**File**: `resources/js/Pages/Auth/Login.vue`
+
+- Material Design 3 UI (Vuetify + Material Symbols icons)
+- Single "Sign in with Microsoft" button → `window.location.href = '/auth/azure'`
+- No credentials ever entered in the SPA
+
+#### Dashboard — Identity Panel
+
+**File**: `resources/js/Pages/Dashboard.vue`
+
+Displays the authenticated user's Entra identity information using UI-kit components:
+
+```typescript
+const authUser = (page.props.auth as any)?.user as {
+  entra_roles: string[];
+  entra_groups: string[];
+  // ...
+} | null;
+```
+
+- **Entra ID Roles** panel — `Label` chips (`color="brand"`) for each app role
+- **Entra ID Groups** panel — `Label` chips (`color="info"`) for each group membership
+
+#### TypeScript Auth Interface Pattern
+
+```typescript
+// pages receive entra_roles and entra_groups via Inertia shared props
+const page = usePage<{
+  auth: { user: { entra_roles: string[]; entra_groups: string[] } | null };
+}>();
+```
+
+---
+
+## Token & Session Lifecycle
+
+| Step           | Actor  | Detail                                                             |
+| -------------- | ------ | ------------------------------------------------------------------ |
+| Auth code flow | Entra  | Authorization Code + PKCE; redirect to BFF callback                |
+| Token exchange | BFF    | BFF exchanges code for Access Token + Refresh Token server-side    |
+| Claims read    | BFF    | `roles` and `groups` decoded from access token JWT payload         |
+| Tokens stored  | BFF→DB | Encrypted at rest in PostgreSQL; never sent to browser             |
+| Session issued | BFF    | HttpOnly `laravel_session` cookie; SPA sends on every request      |
+| Token refresh  | BFF    | On expiry, BFF uses Refresh Token silently before forwarding calls |
+| Logout         | BFF    | Session invalidated; CSRF token regenerated                        |
+
+---
+
+## Security Considerations
+
+### ✅ Implemented Security Features
+
+1. **Token Shield** — access/refresh tokens never leave the server
+2. **HttpOnly Session Cookie** — SPA cannot access the session token via JS
+3. **CSRF Protection** — Inertia.js sends `X-XSRF-TOKEN` on every request
+4. **Audience Isolation** — BFF requests tokens scoped to `api://showcase-api/access_as_user` (Strategy A)
+5. **Session Invalidation** — Full session + CSRF regeneration on logout
+6. **Least-Privilege Scopes** — only `User.Read`, `profile`, `email`, `openid`, `access_as_user`
+
+### 🔒 Production Recommendations
+
+```env
+APP_ENV=production
+APP_DEBUG=false
+SESSION_SECURE_COOKIE=true
+SESSION_SAME_SITE=lax
+```
+
+- Always HTTPS in production (required by Entra for non-localhost redirect URIs)
+- Pre-consent all API permissions via admin consent — users never see consent prompts
+- Add `AZURE_TENANT_ID=<your-tenant-guid>` to restrict to your organisation only
+
+---
+
+## API Permissions Summary
+
+| Permission       | Type      | Description                             | App Registration |
+| ---------------- | --------- | --------------------------------------- | ---------------- |
+| `openid`         | Delegated | Sign users in                           | Showcase-BFF     |
+| `profile`        | Delegated | View basic profile                      | Showcase-BFF     |
+| `email`          | Delegated | View email address                      | Showcase-BFF     |
+| `User.Read`      | Delegated | Read signed-in user's profile           | Showcase-BFF     |
+| `access_as_user` | Delegated | Call Showcase API as the signed-in user | Showcase-BFF     |
+
+App roles (`Hospital.User`, `SuperUser`, …) are defined on `Showcase-API` and **assigned** on its enterprise application.
+
+---
+
+## Troubleshooting
+
+### "Client credentials are invalid"
+
+Verify `AZURE_CLIENT_ID` / `AZURE_CLIENT_SECRET`. Run `php artisan config:clear` inside Docker.
+
+### "Redirect URI mismatch"
+
+Ensure `AZURE_REDIRECT_URI` in `.env` exactly matches the URI registered in Entra (including scheme and port).
+
+### "Invalid state"
+
+Session or CSRF mismatch. Clear browser cookies and restart the auth flow.
+
+### `roles` / `groups` arrays are empty after login
+
+- Verify app roles are defined on the `Showcase-API` registration and assigned to the user via the enterprise application.
+- Verify the `groups` claim is enabled in **Token configuration** of the BFF registration.
+- Inspect the raw JWT at https://jwt.ms.
+
+### Users not being created
+
+Run `docker exec reference-app-laravel-vue-php php artisan migrate` and check DB connectivity.
+
+---
+
+## OpenTelemetry Tracing
+
+| Span                  | Description                       |
+| --------------------- | --------------------------------- |
+| `azure.auth.redirect` | User initiates login              |
+| `azure.auth.callback` | OAuth callback + JIT provisioning |
+| `azure.auth.logout`   | User logs out                     |
+
+View traces: Jaeger UI → http://localhost:16686 → service `showcase-backend`
+
+---
+
+## Files Changed
+
+### Backend
+
+| File                                                                        | Change    |
+| --------------------------------------------------------------------------- | --------- |
+| `app/Http/Controllers/Auth/AzureAuthController.php`                         | Rewritten |
+| `app/Models/User.php`                                                       | Updated   |
+| `app/Http/Middleware/HandleInertiaRequests.php`                             | Updated   |
+| `database/migrations/2026_04_09_000000_add_entra_claims_to_users_table.php` | New       |
+
+### Frontend
+
+| File                                | Change    |
+| ----------------------------------- | --------- |
+| `resources/js/Pages/Auth/Login.vue` | No change |
+| `resources/js/Pages/Dashboard.vue`  | Updated   |
+
+---
+
+## Related Documentation
+
+- [IT Architecture Guidelines — Authentication and Authorization with Microsoft Entra ID](../docs/ARCHITECTURE.md)
+- [Feature: Login & User Provisioning](../FEAT-LOGIN-USERS.md)
+- [Azure Entra ID Documentation](https://learn.microsoft.com/en-us/entra/identity/)
+- [Laravel Socialite](https://laravel.com/docs/socialite)
+- [OAuth 2.0 Authorization Code Flow](https://learn.microsoft.com/en-us/entra/identity-platform/v2-oauth2-auth-code-flow)
 
 ---
 

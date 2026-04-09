@@ -4,6 +4,7 @@ import { usePage } from '@inertiajs/vue3';
 import AppLayout from '@/Layouts/AppLayout.vue';
 import {
   Button,
+  Label,
   Panel,
   NotificationCard,
   NotificationCardTypeEnum as NotificationCardType,
@@ -38,32 +39,40 @@ const props = defineProps<{
 // Get authenticated user from shared data
 const page = usePage();
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-const user = (page.props.auth as any)?.user;
+const authUser = (page.props.auth as any)?.user as {
+  id: number;
+  name: string;
+  email: string;
+  avatar?: string;
+  entra_roles: string[];
+  entra_groups: string[];
+} | null;
+const user = authUser;
 
 // Stats Data from props or defaults
 const stats = computed(() => [
   {
     title: 'Total Users',
     value: props.statistics?.total_users?.toString() || '0',
-    icon: 'mdi-account-multiple',
+    icon: 'group',
     color: 'primary',
   },
   {
     title: 'Total Posts',
     value: props.statistics?.total_posts?.toString() || '0',
-    icon: 'mdi-post',
+    icon: 'article',
     color: 'secondary',
   },
   {
     title: 'Active Users',
     value: props.statistics?.active_users?.toString() || '0',
-    icon: 'mdi-account-check',
+    icon: 'how_to_reg',
     color: 'success',
   },
   {
     title: 'Growth Rate',
     value: `${props.statistics?.growth_rate || 0}%`,
-    icon: 'mdi-trending-up',
+    icon: 'trending_up',
     color: 'info',
   },
 ]);
@@ -113,7 +122,7 @@ const dismissNotification = (index: number) => {
                   <v-icon
                     size="small"
                     color="white">
-                    mdi-calendar-today
+                    calendar_today
                   </v-icon>
                   {{
                     new Date().toLocaleDateString('en-US', {
@@ -129,7 +138,7 @@ const dismissNotification = (index: number) => {
                 size="120"
                 color="white"
                 class="opacity-25">
-                mdi-view-dashboard
+                dashboard
               </v-icon>
             </div>
           </v-card-text>
@@ -176,27 +185,24 @@ const dismissNotification = (index: number) => {
       <v-col
         cols="12"
         md="6">
-        <Panel
-          title="Quick Actions"
-          icon="mdi-lightning-bolt"
-          :collapsible="true">
+        <Panel title="Quick Actions">
           <div class="d-flex flex-column gap-2 pa-4">
             <Button
               variant="elevated"
               color="primary"
-              prepend-icon="mdi-account-plus">
+              prepend-icon="person_add">
               Add New User
             </Button>
             <Button
               variant="outlined"
               color="secondary"
-              prepend-icon="mdi-file-document">
+              prepend-icon="description">
               Generate Report
             </Button>
             <Button
               variant="tonal"
               color="success"
-              prepend-icon="mdi-check-circle">
+              prepend-icon="check_circle">
               Complete Task
             </Button>
           </div>
@@ -207,20 +213,79 @@ const dismissNotification = (index: number) => {
       <v-col
         cols="12"
         md="6">
-        <Panel
-          title="Recent Notifications"
-          icon="mdi-bell"
-          :collapsible="true">
+        <Panel title="Recent Notifications">
           <div class="pa-4">
             <NotificationCard
               v-for="(notification, index) in notifications"
               :key="index"
               :type="notification.type"
               :title="notification.title"
-              :message="notification.message"
-              :timestamp="notification.timestamp"
-              class="mb-3"
-              @dismiss="dismissNotification(index)" />
+              class="mb-3">
+              <div class="d-flex justify-space-between align-center">
+                <div>
+                  <p class="mb-0">{{ notification.message }}</p>
+                  <p class="text-caption mt-1 mb-0 opacity-75">{{ notification.timestamp }}</p>
+                </div>
+                <v-btn
+                  icon
+                  size="small"
+                  variant="text"
+                  @click="dismissNotification(index)">
+                  <v-icon size="small">close</v-icon>
+                </v-btn>
+              </div>
+            </NotificationCard>
+          </div>
+        </Panel>
+      </v-col>
+    </v-row>
+
+    <!-- Entra ID Identity Panel -->
+    <v-row class="mt-4">
+      <v-col
+        cols="12"
+        md="6">
+        <Panel title="Entra ID Roles">
+          <div class="pa-4">
+            <p
+              v-if="!user?.entra_roles?.length"
+              class="text-body-2 text-medium-emphasis">
+              No app roles assigned.
+            </p>
+            <div
+              v-else
+              class="d-flex flex-wrap gap-2">
+              <Label
+                v-for="role in user.entra_roles"
+                :key="role"
+                color="brand">
+                {{ role }}
+              </Label>
+            </div>
+          </div>
+        </Panel>
+      </v-col>
+
+      <v-col
+        cols="12"
+        md="6">
+        <Panel title="Entra ID Groups">
+          <div class="pa-4">
+            <p
+              v-if="!user?.entra_groups?.length"
+              class="text-body-2 text-medium-emphasis">
+              No group memberships returned.
+            </p>
+            <div
+              v-else
+              class="d-flex flex-wrap gap-2">
+              <Label
+                v-for="group in user.entra_groups"
+                :key="group"
+                color="info">
+                {{ group }}
+              </Label>
+            </div>
           </div>
         </Panel>
       </v-col>
@@ -229,10 +294,7 @@ const dismissNotification = (index: number) => {
     <!-- Progress Indicators -->
     <v-row class="mt-4">
       <v-col cols="12">
-        <Panel
-          title="System Resources"
-          icon="mdi-chart-line"
-          :collapsible="true">
+        <Panel title="System Resources">
           <div class="pa-4">
             <div class="mb-4">
               <div class="d-flex justify-space-between mb-2">
@@ -273,10 +335,10 @@ const dismissNotification = (index: number) => {
       <v-col cols="12">
         <MessageBar
           v-model="messageBarVisible"
-          :type="MessageBarType.Info"
-          message="This is a demo dashboard showcasing UI-kit components from the shared library"
-          action="Learn More"
-          @action="() => console.log('Learn more clicked')" />
+          closable
+          :type="MessageBarType.Info">
+          This is a demo dashboard showcasing UI-kit components from the shared library
+        </MessageBar>
       </v-col>
     </v-row>
   </AppLayout>

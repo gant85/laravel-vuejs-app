@@ -2,6 +2,7 @@
 import { ref } from 'vue';
 import { Head, router, usePage } from '@inertiajs/vue3';
 import {
+  Badge,
   MessageBar,
   MessageBarTypeEnum as MessageBarType,
 } from '@reference-app-laravel-vue/ui-kit';
@@ -33,7 +34,7 @@ const notifications = ref(3);
 const userMenuOpen = ref(false);
 const systemMessageVisible = ref(true);
 
-const menuItems = [{ title: 'Dashboard', icon: 'mdi-view-dashboard', to: '/' }];
+const menuItems = [{ title: 'Dashboard', icon: 'dashboard', to: '/' }];
 
 const toggleDrawer = () => {
   drawer.value = !drawer.value;
@@ -60,7 +61,7 @@ const logout = () => {
           <v-icon
             start
             size="large">
-            mdi-view-dashboard
+            dashboard
           </v-icon>
           <span class="text-h6 font-weight-bold"> Showcase Application </span>
         </v-toolbar-title>
@@ -71,7 +72,7 @@ const logout = () => {
         <v-text-field
           variant="solo"
           density="compact"
-          prepend-inner-icon="mdi-magnify"
+          prepend-inner-icon="search"
           placeholder="Search users, events..."
           hide-details
           single-line
@@ -82,12 +83,9 @@ const logout = () => {
         <v-btn
           icon
           size="large">
-          <v-badge
-            :content="notifications"
-            color="error"
-            overlap>
-            <v-icon>mdi-bell-outline</v-icon>
-          </v-badge>
+          <Badge :content="notifications">
+            <v-icon>notifications</v-icon>
+          </Badge>
         </v-btn>
 
         <!-- User Menu -->
@@ -129,13 +127,13 @@ const logout = () => {
 
             <v-list density="compact">
               <v-list-item
-                prepend-icon="mdi-account-circle"
+                prepend-icon="account_circle"
                 title="Profile"></v-list-item>
               <v-list-item
-                prepend-icon="mdi-cog"
+                prepend-icon="settings"
                 title="Settings"></v-list-item>
               <v-list-item
-                prepend-icon="mdi-help-circle"
+                prepend-icon="help"
                 title="Help"></v-list-item>
             </v-list>
 
@@ -147,7 +145,7 @@ const logout = () => {
                 color="error"
                 block
                 @click="logout">
-                <v-icon start>mdi-logout</v-icon>
+                <v-icon start>logout</v-icon>
                 Logout
               </v-btn>
             </v-card-actions>
@@ -166,7 +164,7 @@ const logout = () => {
           <v-icon
             size="32"
             color="primary">
-            mdi-application
+            apps
           </v-icon>
           <span
             v-if="drawer"
@@ -194,7 +192,7 @@ const logout = () => {
           <v-divider class="my-2"></v-divider>
 
           <v-list-item
-            prepend-icon="mdi-cog"
+            prepend-icon="settings"
             title="Settings"
             value="settings"
             rounded="xl"></v-list-item>
@@ -206,10 +204,10 @@ const logout = () => {
         <!-- System Message Bar -->
         <MessageBar
           v-model="systemMessageVisible"
-          :type="MessageBarType.Information"
-          message="System is running smoothly. All services are operational."
-          action="Details"
-          @action="() => console.log('View details clicked')" />
+          closable
+          :type="MessageBarType.Information">
+          System is running smoothly. All services are operational.
+        </MessageBar>
 
         <v-container
           fluid

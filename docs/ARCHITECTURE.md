@@ -10,10 +10,12 @@ The Showcase application is a **monolithic Laravel 12 application** implementing
 
 - ✅ **Single Deployment Unit**: Frontend assets compiled into Laravel public directory
 - ✅ **BFF Pattern**: Laravel aggregates external APIs, not primary data owner
-- ✅ **Minimal Database**: PostgreSQL used only for sessions, cache, preferences
+- ✅ **Minimal Database**: PostgreSQL used only for sessions, cache, user identity (Entra claims)
 - ✅ **External APIs**: Primary data source via HTTP client with caching
 - ✅ **Inertia.js**: SPA-like UX without REST API (server-side rendering with client-side hydration)
-- ✅ **Azure Entra ID**: OAuth2/OIDC Single Sign-On with Microsoft authentication
+- ✅ **Azure Entra ID**: OAuth2/OIDC SSO — Strategy A (per-domain API registration)
+- ✅ **JWT Claims**: roles and groups extracted from token at login; shared as Inertia props
+- ✅ **Material Symbols Outlined**: Single icon set across all components (no MDI)
 
 ---
 
@@ -23,13 +25,14 @@ The Showcase application is a **monolithic Laravel 12 application** implementing
 
 ### Frontend
 
-| Technology     | Version | Purpose                             |
-| -------------- | ------- | ----------------------------------- |
-| **Vue.js**     | 3.5     | Progressive JavaScript framework    |
-| **TypeScript** | 5.x     | Type-safe development               |
-| **Vuetify**    | 3.7     | Material Design 3 component library |
-| **Vite**       | 6.0     | Build tool with HMR                 |
-| **Inertia.js** | 2.1     | SPA bridge (client-side routing)    |
+| Technology                    | Version | Purpose                               |
+| ----------------------------- | ------- | ------------------------------------- |
+| **Vue.js**                    | 3.5     | Progressive JavaScript framework      |
+| **TypeScript**                | 5.x     | Type-safe development                 |
+| **Vuetify**                   | 3.7     | Material Design 3 component library   |
+| **Vite**                      | 6.0     | Build tool with HMR                   |
+| **Inertia.js**                | 2.1     | SPA bridge (client-side routing)      |
+| **Material Symbols Outlined** | —       | Icon set (Google Fonts, replaces MDI) |
 
 ### Backend
 
@@ -309,10 +312,20 @@ PostgreSQL is **NOT the primary data store**. External APIs are the source of tr
 
 **Database is used only for**:
 
-1. **Sessions** - User authentication sessions
-2. **Cache** - Laravel cache driver (alternative to Redis)
-3. **User Preferences** - UI settings, themes, favorites
-4. **Temporary Data** - Shopping carts, draft forms
+1. **Sessions** — User authentication sessions
+2. **User Identity** — Entra ID profile, access/refresh tokens, roles and groups (cached from JWT)
+3. **Cache** — Laravel cache driver (alternative to Redis)
+
+**`users` table — Entra ID fields**:
+
+| Column                | Type    | Description                              |
+| --------------------- | ------- | ---------------------------------------- |
+| `azure_id`            | varchar | Entra object ID                          |
+| `azure_token`         | text    | Access token (server-side only)          |
+| `azure_refresh_token` | text    | Refresh token for transparent renewal    |
+| `avatar`              | text    | Profile picture URL                      |
+| `entra_roles`         | json    | App role values from JWT `roles` claim   |
+| `entra_groups`        | json    | Group object-IDs from JWT `groups` claim |
 
 **Example Schema**:
 
@@ -495,7 +508,7 @@ reference-app-laravel-vue/                    # Root monorepo
 └── docker/                  # Docker configurations
     ├── php/                 # PHP-FPM Dockerfile
     ├── nginx/               # Nginx config
-    └── mysql/               # MySQL config (deprecated)
+    └── postgres/            # PostgreSQL config
 ```
 
 ### Dependency Rules (Sheriff)

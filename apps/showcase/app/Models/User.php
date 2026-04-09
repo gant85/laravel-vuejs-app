@@ -23,6 +23,8 @@ class User extends Authenticatable
         'azure_token',
         'azure_refresh_token',
         'avatar',
+        'entra_groups',
+        'entra_roles',
     ];
 
     /**
@@ -46,6 +48,24 @@ class User extends Authenticatable
     {
         return [
             'email_verified_at' => 'datetime',
+            'entra_groups'      => 'array',
+            'entra_roles'       => 'array',
         ];
+    }
+
+    /**
+     * Check whether the user carries a given Entra app role.
+     */
+    public function hasRole(string $role): bool
+    {
+        return in_array($role, $this->entra_roles ?? [], true);
+    }
+
+    /**
+     * Check whether the user is a member of a given Entra group.
+     */
+    public function inGroup(string $group): bool
+    {
+        return in_array($group, $this->entra_groups ?? [], true);
     }
 }
