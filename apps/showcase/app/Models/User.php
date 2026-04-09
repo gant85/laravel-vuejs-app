@@ -23,12 +23,6 @@ class User extends Authenticatable
         'azure_token',
         'azure_refresh_token',
         'avatar',
-        'provisioning_source',
-        'entra_groups',
-        'entra_roles',
-        'allowed_pdv_codes',
-        'last_login_at',
-        'last_login_ip',
     ];
 
     /**
@@ -52,12 +46,6 @@ class User extends Authenticatable
     {
         return [
             'email_verified_at' => 'datetime',
-            'last_login_at' => 'datetime',
-            'azure_token' => 'encrypted',
-            'azure_refresh_token' => 'encrypted',
-            'entra_groups' => 'array',
-            'entra_roles' => 'array',
-            'allowed_pdv_codes' => 'array',
         ];
     }
 }

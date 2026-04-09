@@ -27,8 +27,6 @@
     "docker:azure:up": "docker compose -f docker-compose.yml -f docker-compose.azure.yml up -d",
     "docker:azure:down": "docker compose -f docker-compose.yml -f docker-compose.azure.yml down",
     "docker:azure:logs": "docker compose -f docker-compose.yml -f docker-compose.azure.yml logs -f",
-    "app:create": "powershell -NoProfile -ExecutionPolicy Bypass -File ./scripts/create-app-from-showcase.ps1",
-    "app:create:sh": "bash ./scripts/create-app-from-showcase.sh",
     "docs:confluence": "python scripts/upload_confluence.py",
     "prepare": "lefthook install",
     "commitlint": "commitlint --edit",

@@ -54,8 +54,6 @@ return [
         'client_secret' => env('AZURE_CLIENT_SECRET'),
         'redirect' => env('AZURE_REDIRECT_URI'),
         'tenant' => env('AZURE_TENANT_ID'),
-        'graph_enabled' => env('AZURE_GRAPH_ENABLED', false),
-        'graph_default_group_id' => env('AZURE_GRAPH_DEFAULT_GROUP_ID'),
     ]
 
 ];

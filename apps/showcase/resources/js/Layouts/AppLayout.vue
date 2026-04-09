@@ -16,10 +16,6 @@ interface User {
   name: string;
   email: string;
   avatar?: string;
-  provisioning_source?: string;
-  entra_groups?: string[];
-  entra_roles?: string[];
-  allowed_pdv_codes?: string[];
 }
 
 interface PageProps {
@@ -126,14 +122,6 @@ const logout = () => {
                     <span class="text-white">{{ user.name?.charAt(0).toUpperCase() }}</span>
                   </v-avatar>
                 </template>
-              </v-list-item>
-              <v-list-item v-if="user.provisioning_source">
-                <v-chip
-                  size="small"
-                  variant="tonal"
-                  color="primary">
-                  Provisioning: {{ user.provisioning_source.toUpperCase() }}
-                </v-chip>
               </v-list-item>
             </v-list>
 

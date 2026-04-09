@@ -1,18 +1,10 @@
-import vue from '@vitejs/plugin-vue';
-import { fileURLToPath, URL } from 'node:url';
-import fs from 'node:fs';
 import { defineConfig } from 'vite';
+import laravel from 'laravel-vite-plugin';
+import vue from '@vitejs/plugin-vue';
 import vuetify from 'vite-plugin-vuetify';
 import viteCompression from 'vite-plugin-compression';
 import { imagetools } from 'vite-imagetools';
-import laravel from 'laravel-vite-plugin';
-
-const workspaceNodeModules = fileURLToPath(new URL('../../node_modules', import.meta.url));
-const localNodeModules = fileURLToPath(new URL('./node_modules', import.meta.url));
-
-// Check if we are running inside the monorepo to safely inject symlink bypasses
-const uiKitMonorepoPath = fileURLToPath(new URL('../../libs/ui-kit/src', import.meta.url));
-const isMonorepo = fs.existsSync(uiKitMonorepoPath);
+import { fileURLToPath, URL } from 'node:url';
 
 export default defineConfig({
   plugins: [
@@ -20,7 +12,14 @@ export default defineConfig({
       input: ['resources/js/app.ts'],
       refresh: true,
     }),
-    vue(),
+    vue({
+      template: {
+        transformAssetUrls: {
+          base: null,
+          includeAbsolute: false,
+        },
+      },
+    }),
     vuetify({
       autoImport: true,
       styles: {
@@ -42,29 +41,12 @@ export default defineConfig({
   resolve: {
     alias: {
       '@': fileURLToPath(new URL('./resources/js', import.meta.url)),
-      ...(isMonorepo
-        ? {
-            '@reference-app-laravel-vue/ui-kit/styles': fileURLToPath(
-              new URL('../../libs/ui-kit/src/styles/_index.scss', import.meta.url)
-            ),
-            '@reference-app-laravel-vue/ui-kit/overrides': fileURLToPath(
-              new URL('../../libs/ui-kit/src/styles/overrides.scss', import.meta.url)
-            ),
-            '@reference-app-laravel-vue/ui-kit': uiKitMonorepoPath,
-          }
-        : {}),
-    },
-  },
-  css: {
-    preprocessorOptions: {
-      scss: {
-        api: 'modern-compiler',
-        loadPaths: [localNodeModules, workspaceNodeModules],
-      },
-      sass: {
-        api: 'modern-compiler',
-        loadPaths: [localNodeModules, workspaceNodeModules],
-      },
+      '@reference-app-laravel-vue/ui-kit/overrides': fileURLToPath(
+        new URL('../../libs/ui-kit/src/styles/overrides.scss', import.meta.url)
+      ),
+      '@reference-app-laravel-vue/ui-kit': fileURLToPath(
+        new URL('../../libs/ui-kit/src', import.meta.url)
+      ),
     },
   },
   server: {
@@ -76,6 +58,12 @@ export default defineConfig({
     watch: {
       usePolling: true,
     },
+    fs: {
+      allow: ['../..'],
+    },
+  },
+  css: {
+    devSourcemap: false,
   },
   build: {
     rollupOptions: {

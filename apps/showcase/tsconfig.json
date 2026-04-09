@@ -23,7 +23,8 @@
     /* Path aliases */
     "baseUrl": ".",
     "paths": {
-      "@/*": ["./resources/js/*"]
+      "@/*": ["./resources/js/*"],
+      "@reference-app-laravel-vue/ui-kit": ["../../libs/ui-kit/src/index.ts"]
     }
   },
   "include": [

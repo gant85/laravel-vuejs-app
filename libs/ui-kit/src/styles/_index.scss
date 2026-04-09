@@ -1,8 +1,6 @@
 @use 'buttons';
 @use 'cards';
-@use 'typography';
 @use 'vuetify/settings' with (
-  $body-font-family: typography.$font-family,
   $button-border-radius: buttons.$border-radius,
   $card-border-radius: cards.$border-radius
 );

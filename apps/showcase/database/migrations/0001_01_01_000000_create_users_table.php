@@ -13,20 +13,10 @@ return new class extends Migration
     {
         Schema::create('users', function (Blueprint $table) {
             $table->id();
-            $table->string('azure_id')->nullable()->unique();
             $table->string('name');
             $table->string('email')->unique();
-            $table->text('avatar')->nullable();
             $table->timestamp('email_verified_at')->nullable();
-            $table->string('password')->nullable();
-            $table->text('azure_token')->nullable();
-            $table->text('azure_refresh_token')->nullable();
-            $table->string('provisioning_source', 20)->default('jit');
-            $table->json('entra_groups')->nullable();
-            $table->json('entra_roles')->nullable();
-            $table->json('allowed_pdv_codes')->nullable();
-            $table->timestamp('last_login_at')->nullable();
-            $table->string('last_login_ip', 45)->nullable();
+            $table->string('password');
             $table->rememberToken();
             $table->timestamps();
         });

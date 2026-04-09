@@ -1,21 +1,10 @@
 <script setup lang="ts">
-import { computed } from 'vue';
-import { Head, usePage } from '@inertiajs/vue3';
-
-interface PageProps {
-  errors?: {
-    error?: string;
-  };
-  [key: string]: unknown;
-}
+import { Head } from '@inertiajs/vue3';
 
 // Redirect to Azure login on component mount
 const loginWithAzure = () => {
   window.location.href = '/auth/azure';
 };
-
-const page = usePage<PageProps>();
-const authError = computed(() => page.props.errors?.error ?? '');
 </script>
 
 <template>
@@ -42,29 +31,21 @@ const authError = computed(() => page.props.errors?.error ?? '');
                 <v-icon
                   size="large"
                   class="mr-2">
-                  mdi-hospital-building
+                  local_hospital
                 </v-icon>
                 Showcase Application
               </v-card-title>
 
               <v-card-text class="pa-8">
-                <v-alert
-                  v-if="authError"
-                  type="error"
-                  variant="tonal"
-                  class="mb-6">
-                  {{ authError }}
-                </v-alert>
-
                 <div class="text-center mb-6">
                   <v-icon
                     size="80"
                     color="primary">
-                    mdi-shield-lock
+                    lock
                   </v-icon>
-                  <h2 class="text-h6 mt-4 mb-2">Secure Entra Login</h2>
+                  <h2 class="text-h6 mt-4 mb-2">Secure Login</h2>
                   <p class="text-body-2 text-medium-emphasis">
-                    Sign in with your Microsoft Entra ID account to continue
+                    Sign in with your Azure Entra ID account to continue
                   </p>
                 </div>
 
@@ -75,7 +56,7 @@ const authError = computed(() => page.props.errors?.error ?? '');
                   size="large"
                   color="primary"
                   variant="flat"
-                  prepend-icon="mdi-microsoft"
+                  prepend-icon="login"
                   @click="loginWithAzure">
                   Sign in with Microsoft
                 </v-btn>
@@ -88,18 +69,16 @@ const authError = computed(() => page.props.errors?.error ?? '');
                     <v-icon
                       start
                       size="small">
-                      mdi-shield-check
+                      verified_user
                     </v-icon>
-                    Microsoft Entra ID Protected
+                    Azure Entra ID Protected
                   </v-chip>
                 </div>
               </v-card-text>
 
               <v-card-actions class="bg-grey-lighten-4 pa-4">
                 <v-spacer />
-                <small class="text-caption text-medium-emphasis">
-                  Powered by Microsoft Entra ID
-                </small>
+                <small class="text-caption text-medium-emphasis"> Powered by Azure Entra ID </small>
                 <v-spacer />
               </v-card-actions>
             </v-card>

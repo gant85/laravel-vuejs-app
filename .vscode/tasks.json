@@ -146,14 +146,6 @@
         "id": "output"
       },
       "problemMatcher": []
-    },
-    {
-      "label": "Type Check: Showcase",
-      "type": "shell",
-      "command": "pnpm",
-      "args": ["--filter", "@reference-app-laravel-vue/showcase", "type-check"],
-      "isBackground": false,
-      "group": "test"
     }
   ]
 }

@@ -6,7 +6,6 @@ import { createInertiaApp } from '@inertiajs/vue3';
 import { resolvePageComponent } from 'laravel-vite-plugin/inertia-helpers';
 import { createVuetify } from 'vuetify';
 import '@mdi/font/css/materialdesignicons.css';
-import { aliases, mdi } from 'vuetify/iconsets/mdi';
 import 'vuetify/styles';
 import '@reference-app-laravel-vue/ui-kit/overrides';
 import {
@@ -25,15 +24,8 @@ const appName = import.meta.env.VITE_APP_NAME || 'Showcase Application';
 
 // Material Symbols Outlined custom icon set (Google Fonts Icons, weight controlled via CSS)
 const materialSymbols = {
-  component: (props: IconProps) => {
-    const iconName = String(props.icon ?? '');
-
-    if (iconName.startsWith('mdi-')) {
-      return h('span', { class: ['mdi', iconName] });
-    }
-
-    return h('span', { class: 'material-symbols-outlined' }, [iconName]);
-  },
+  component: (props: IconProps) =>
+    h('span', { class: 'material-symbols-outlined' }, [props.icon as string]),
 };
 
 // Vuetify configuration with Material Design 3
@@ -42,8 +34,7 @@ const materialSymbols = {
 const vuetify = createVuetify({
   icons: {
     defaultSet: 'materialSymbols',
-    aliases,
-    sets: { materialSymbols, mdi },
+    sets: { materialSymbols },
   },
   theme: {
     defaultTheme: 'light',
