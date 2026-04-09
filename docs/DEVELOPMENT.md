@@ -111,13 +111,13 @@ docker exec reference-app-laravel-vue-php php artisan migrate
 docker exec reference-app-laravel-vue-php php artisan db:seed
 ```
 
-### 6. Start Development Server
+### 6. Start Frontend Development Server (Natively)
 
 ```bash
-# Start Vite dev server with HMR
+# Start Vite dev server with HMR natively on your machine
 pnpm dev
 
-# Or run specific app
+# Or run a specific app
 pnpm --filter @reference-app-laravel-vue/showcase dev
 ```
 
@@ -676,20 +676,6 @@ docker exec reference-app-laravel-vue-php rm -rf vendor
 
 # Reinstall
 docker exec reference-app-laravel-vue-php composer install
-```
-
-### Issue: pnpm dependencies out of sync
-
-**Solution**:
-
-```bash
-# Remove node_modules
-rm -rf node_modules
-rm -rf apps/*/node_modules
-rm -rf libs/*/node_modules
-
-# Reinstall
-pnpm install
 ```
 
 ---
