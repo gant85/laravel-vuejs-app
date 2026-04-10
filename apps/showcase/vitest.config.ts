@@ -34,9 +34,6 @@ export default defineConfig({
   resolve: {
     alias: {
       '@': fileURLToPath(new URL('./resources/js', import.meta.url)),
-      '@reference-app-laravel-vue/ui-kit': fileURLToPath(
-        new URL('../../libs/ui-kit/src', import.meta.url)
-      ),
     },
   },
 });

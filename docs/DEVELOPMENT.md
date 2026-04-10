@@ -507,6 +507,22 @@ git branch -d hotfix/critical-security-fix
 
 ## Common Tasks
 
+### Create a New Standalone Application
+
+You can easily scaffold a new standalone project based on the `showcase` template. The script will generate the new application in the parent directory (outside of this repository's workspace) and configure it to import shared libraries (like `ui-kit`) as standard external npm dependencies.
+
+**Windows (PowerShell):**
+
+```powershell
+.\scripts\create-app-from-showcase.ps1 -AppName "my-new-app"
+```
+
+**macOS/Linux (Bash):**
+
+```bash
+./scripts/create-app-from-showcase.sh "my-new-app"
+```
+
 ### Add New Vue Component
 
 ```bash
