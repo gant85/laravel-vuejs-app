@@ -117,6 +117,11 @@ const router = createRouter({
       component: () => import('../pages/components/progress-indicators/ProgressIndicatorsDemo.vue'),
     },
     {
+      path: '/components/radio-buttons-demo',
+      name: 'RadioButtonsDemo',
+      component: () => import('../pages/components/radio-buttons/RadioButtonsDemo.vue'),
+    },
+    {
       path: '/components/selection-controls-demo',
       name: 'SelectionControlsDemo',
       component: () => import('../pages/components/selection-controls/SelectionControlsDemo.vue'),

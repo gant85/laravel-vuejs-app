@@ -3,6 +3,14 @@ export const componentDefaults = {
     flat: true,
   },
 
+  VBadge: {
+    color: 'error',
+    location: 'top end',
+    offsetY: -4,
+    offsetX: -4,
+    dot: false,
+  },
+
   VBtn: {
     variant: 'flat',
   },
@@ -16,6 +24,7 @@ export const componentDefaults = {
   VDivider: {
     color: 'outline-variant',
     thickness: 1,
+    opacity: 1,
   },
 
   VChip: {
@@ -50,6 +59,11 @@ export const componentDefaults = {
   },
 
   VRadio: {
+    //color: 'primary',  // va settato nel VSelectionControl
+    baseColor: 'on-surface-variant',
+  },
+
+  VSelectionControl: {
     color: 'primary',
   },
 
@@ -82,10 +96,18 @@ export const componentDefaults = {
   VProgressLinear: {
     color: 'primary',
     rounded: true,
+    bgColor: 'primary-container',
+    bgOpacity: '1',
+    height: '8',
+    roundedBar: true,
   },
 
   VProgressCircular: {
     color: 'primary',
+    rounded: true,
+    bgColor: 'primary-container',
+    size: '40',
+    width: '4',
   },
 
   VList: {

@@ -59,12 +59,29 @@ export default defineConfig({
   css: {
     devSourcemap: false,
   },
+  optimizeDeps: {
+    // Pre-scan all page entries to reduce mid-session dependency re-optimization.
+    entries: ['resources/js/app.ts', 'resources/js/Pages/**/*.vue'],
+    // Keep linked workspace package and Vuetify out of pre-bundling to avoid stale chunk paths.
+    exclude: ['vuetify', '@reference-app-laravel-vue/ui-kit'],
+  },
   build: {
+    target: 'es2022',
     rollupOptions: {
       output: {
         manualChunks: {
           'vue-vendor': ['vue', '@inertiajs/vue3'],
           vuetify: ['vuetify'],
+          telemetry: [
+            '@opentelemetry/api',
+            '@opentelemetry/auto-instrumentations-web',
+            '@opentelemetry/exporter-trace-otlp-http',
+            '@opentelemetry/instrumentation',
+            '@opentelemetry/resources',
+            '@opentelemetry/sdk-trace-base',
+            '@opentelemetry/sdk-trace-web',
+            '@opentelemetry/semantic-conventions',
+          ],
         },
       },
     },

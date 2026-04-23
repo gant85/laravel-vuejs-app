@@ -20,6 +20,11 @@ const vuetify = createVuetify({
   icons: {
     defaultSet: 'materialSymbols',
     sets: { materialSymbols },
+    // MAPPA GLI ALIAS INTERNI AI NOMI DI MATERIAL SYMBOLS
+    aliases: {
+      radioOn: 'radio_button_checked', // Fix per Radio Button attivo
+      radioOff: 'radio_button_unchecked', // Fix per Radio Button inattivo
+    },
   },
   theme: {
     defaultTheme: 'light',

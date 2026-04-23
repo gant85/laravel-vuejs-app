@@ -1,6 +1,26 @@
-@use 'buttons';
-@use 'cards';
+@use 'dialogs';
+
+// Design tokens from @reference-app-laravel-vue/ui-kit
+// Source of truth: libs/ui-kit/src/styles/, libs/ui-kit/src/theme/typography.ts
+$button-border-radius: 2px;
+$card-border-radius: 1px;
+$body-font-family: 'Open Sans Variable', sans-serif;
+
 @use 'vuetify/settings' with (
-  $button-border-radius: buttons.$border-radius,
-  $card-border-radius: cards.$border-radius
+  $body-font-family: $body-font-family,
+  $button-border-radius: $button-border-radius,
+  $card-border-radius: $card-border-radius,
+
+  //Badges
+  $badge-font-size: 10px,
+  $badge-font-weight: 400,
+  $badge-height: 14px,
+  $badge-padding: 0 3px,
+  $badge-min-width: 14px,
+  $badge-dot-width: 5px,
+  $badge-dot-height: 5px,
+
+  //Dialogs
+  $overlay-opacity: dialogs.$overlay-opacity,
+  $overlay-scrim-background: dialogs.$overlay-scrim-background
 );

@@ -8,7 +8,6 @@ import {
   Panel,
   NotificationCard,
   NotificationCardTypeEnum as NotificationCardType,
-  ProgressIndicatorLinear,
   MessageBar,
   MessageBarTypeEnum as MessageBarType,
 } from '@reference-app-laravel-vue/ui-kit';
@@ -301,8 +300,8 @@ const dismissNotification = (index: number) => {
                 <span class="text-body-2">CPU Usage</span>
                 <span class="text-body-2 font-weight-bold">65%</span>
               </div>
-              <ProgressIndicatorLinear
-                :value="65"
+              <v-progress-linear
+                :model-value="65"
                 color="primary" />
             </div>
 
@@ -311,8 +310,8 @@ const dismissNotification = (index: number) => {
                 <span class="text-body-2">Memory Usage</span>
                 <span class="text-body-2 font-weight-bold">82%</span>
               </div>
-              <ProgressIndicatorLinear
-                :value="82"
+              <v-progress-linear
+                :model-value="82"
                 color="warning" />
             </div>
 
@@ -321,8 +320,8 @@ const dismissNotification = (index: number) => {
                 <span class="text-body-2">Disk Usage</span>
                 <span class="text-body-2 font-weight-bold">45%</span>
               </div>
-              <ProgressIndicatorLinear
-                :value="45"
+              <v-progress-linear
+                :model-value="45"
                 color="success" />
             </div>
           </div>

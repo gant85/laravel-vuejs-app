@@ -1,0 +1,42 @@
+$overlay-opacity: 0.7;
+$overlay-scrim-background: #191c20; // Va recuperato dal tema?
+
+@mixin overrides {
+  .v-dialog {
+    .v-card {
+      border: 1px solid rgb(var(--v-theme-outline-variant)) !important;
+      border-radius: 3px !important;
+
+      .v-card-item {
+        padding-top: 12px !important;
+        padding-bottom: 12px !important;
+      }
+
+      .v-card-item__append {
+        padding-left: 4px;
+
+        button {
+          width: 32px;
+          height: 32px;
+        }
+      }
+
+      .v-card-actions {
+        gap: 12px;
+        padding: 16px 24px;
+      }
+
+      .v-card-text {
+        padding: 24px !important;
+      }
+    }
+
+    &.scrollable {
+      .v-card-text {
+        overflow: auto;
+        border-top: 1px solid rgb(var(--v-theme-outline-variant));
+        border-bottom: 1px solid rgb(var(--v-theme-outline-variant));
+      }
+    }
+  }
+}

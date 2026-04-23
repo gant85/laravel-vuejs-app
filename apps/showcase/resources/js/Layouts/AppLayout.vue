@@ -2,7 +2,6 @@
 import { ref } from 'vue';
 import { Head, router, usePage } from '@inertiajs/vue3';
 import {
-  Badge,
   MessageBar,
   MessageBarTypeEnum as MessageBarType,
 } from '@reference-app-laravel-vue/ui-kit';
@@ -83,9 +82,9 @@ const logout = () => {
         <v-btn
           icon
           size="large">
-          <Badge :content="notifications">
+          <v-badge :content="notifications">
             <v-icon>notifications</v-icon>
-          </Badge>
+          </v-badge>
         </v-btn>
 
         <!-- User Menu -->

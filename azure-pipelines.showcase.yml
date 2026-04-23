@@ -5,25 +5,33 @@ trigger:
       - develop
       - release/*
   paths:
-    exclude:
-      - README.md
-      - docs/*
+    include:
+      - apps/showcase/*
+      - apps/showcase/**
+      - libs/ui-kit/*
+      - libs/ui-kit/**
+      - docker/*
+      - docker/**
+      - package.json
+      - pnpm-lock.yaml
+      - pnpm-workspace.yaml
 
 pr:
   branches:
     include:
       - main
       - develop
-
-parameters:
-  - name: buildTarget
-    displayName: 'Build Target'
-    type: string
-    default: 'all'
-    values:
-      - all
-      - libs-only
-      - app-only
+  paths:
+    include:
+      - apps/showcase/*
+      - apps/showcase/**
+      - libs/ui-kit/*
+      - libs/ui-kit/**
+      - docker/*
+      - docker/**
+      - package.json
+      - pnpm-lock.yaml
+      - pnpm-workspace.yaml
 
 variables:
   - name: NODE_VERSION
@@ -32,37 +40,21 @@ variables:
     value: '8.2'
   - name: PNPM_VERSION
     value: '8.15.0'
-  - name: IS_PR
-    value: ${{ eq(variables['Build.Reason'], 'PullRequest') }}
-  - name: IS_MAIN
-    value: ${{ eq(variables['Build.SourceBranch'], 'refs/heads/main') }}
-  - name: IS_DEVELOP
-    value: ${{ eq(variables['Build.SourceBranch'], 'refs/heads/develop') }}
-  - name: BUILD_LIBS
-    value: ${{ or(eq(parameters.buildTarget, 'all'), eq(parameters.buildTarget, 'libs-only')) }}
-  - name: BUILD_APP
-    value: ${{ or(eq(parameters.buildTarget, 'all'), eq(parameters.buildTarget, 'app-only')) }}
-  # SonarCloud Configuration (set these in Azure DevOps Pipeline Variables)
-  # SONARCLOUD_SERVICE_CONNECTION: SonarCloud service connection name
-  # SONAR_ORGANIZATION: Your SonarCloud organization key
 
 stages:
-  - stage: Build
-    displayName: 'Build and Test'
+  - stage: BuildShowcase
+    displayName: 'Build and Test Showcase'
     jobs:
-      # Frontend Quality & Tests (parallel job 1)
       - job: FrontendQuality
         displayName: 'Frontend Quality Checks'
         pool:
           vmImage: 'ubuntu-latest'
         steps:
-          # Install Node.js
           - task: NodeTool@0
             displayName: 'Install Node.js'
             inputs:
               versionSpec: $(NODE_VERSION)
 
-          # Cache pnpm store
           - task: Cache@2
             displayName: 'Cache pnpm store'
             inputs:
@@ -71,46 +63,36 @@ stages:
               restoreKeys: |
                 pnpm | "$(Agent.OS)"
 
-          # Install pnpm
           - script: |
               npm install -g pnpm@$(PNPM_VERSION)
             displayName: 'Install pnpm'
 
-          # Install Node dependencies (all workspaces)
           - script: |
               pnpm install --frozen-lockfile
             displayName: 'Install Node Dependencies'
 
-          # Quality checks in parallel
           - script: |
-              pnpm lint
-            displayName: 'Lint (ESLint + Stylelint)'
+              pnpm --filter @reference-app-laravel-vue/showcase lint
+            displayName: 'Lint Showcase'
 
           - script: |
-              pnpm type-check
-            displayName: 'TypeScript Type Check'
+              pnpm --filter @reference-app-laravel-vue/showcase type-check
+            displayName: 'Type Check Showcase'
 
           - script: |
               pnpm sheriff
             displayName: 'Verify Architecture (Sheriff)'
 
-          - script: |
-              npx prettier --check .
-            displayName: 'Check Code Formatting (Prettier)'
-
-      # Frontend Tests (parallel job 2)
       - job: FrontendTests
         displayName: 'Frontend Tests'
         pool:
           vmImage: 'ubuntu-latest'
         steps:
-          # Install Node.js
           - task: NodeTool@0
             displayName: 'Install Node.js'
             inputs:
               versionSpec: $(NODE_VERSION)
 
-          # Cache pnpm store
           - task: Cache@2
             displayName: 'Cache pnpm store'
             inputs:
@@ -119,53 +101,29 @@ stages:
               restoreKeys: |
                 pnpm | "$(Agent.OS)"
 
-          # Install pnpm
           - script: |
               npm install -g pnpm@$(PNPM_VERSION)
             displayName: 'Install pnpm'
 
-          # Install Node dependencies
           - script: |
               pnpm install --frozen-lockfile
             displayName: 'Install Node Dependencies'
 
-          # Run Tests with Coverage
           - script: |
-              pnpm test:coverage
-            displayName: 'Run Vitest Tests with Coverage'
+              pnpm --filter @reference-app-laravel-vue/showcase test:coverage
+            displayName: 'Run Showcase Tests with Coverage'
 
-          # Publish test results
-          - task: PublishTestResults@2
-            displayName: 'Publish Test Results'
-            condition: succeededOrFailed()
-            inputs:
-              testResultsFormat: 'JUnit'
-              testResultsFiles: '**/junit.xml'
-              mergeTestResults: true
-              failTaskOnFailedTests: true
-
-          # Publish code coverage
-          - task: PublishCodeCoverageResults@1
-            displayName: 'Publish Code Coverage'
-            condition: succeededOrFailed()
-            inputs:
-              codeCoverageTool: 'Cobertura'
-              summaryFileLocation: '**/coverage/cobertura-coverage.xml'
-
-      # Backend Quality & Tests (parallel job 3)
       - job: BackendQuality
-        displayName: 'Backend Quality & Tests'
+        displayName: 'Backend Quality and Tests'
         pool:
           vmImage: 'ubuntu-latest'
         steps:
-          # Setup PHP
           - script: |
               sudo update-alternatives --set php /usr/bin/php$(PHP_VERSION)
               php -v
               composer --version
             displayName: 'Setup PHP $(PHP_VERSION)'
 
-          # Cache Composer dependencies
           - task: Cache@2
             displayName: 'Cache Composer dependencies'
             inputs:
@@ -174,13 +132,11 @@ stages:
               restoreKeys: |
                 composer | "$(Agent.OS)"
 
-          # Install Composer dependencies
           - script: |
               cd apps/showcase
               composer install --no-interaction --prefer-dist --optimize-autoloader
             displayName: 'Install Composer Dependencies'
 
-          # Backend quality checks
           - script: |
               cd apps/showcase
               composer run lint
@@ -191,20 +147,17 @@ stages:
               composer run stan
             displayName: 'Run PHPStan'
 
-          # Setup Laravel environment
           - script: |
               cd apps/showcase
               cp .env.example .env
               php artisan key:generate
             displayName: 'Setup Laravel Environment'
 
-          # Run backend tests
           - script: |
               cd apps/showcase
               php artisan test
             displayName: 'Run PHP Tests (Pest)'
 
-      # SonarQube Analysis (depends on tests for coverage)
       - job: SonarQubeAnalysis
         displayName: 'SonarQube Code Quality Analysis'
         dependsOn:
@@ -214,54 +167,45 @@ stages:
         pool:
           vmImage: 'ubuntu-latest'
         steps:
-          # Install Node.js
           - task: NodeTool@0
             displayName: 'Install Node.js'
             inputs:
               versionSpec: $(NODE_VERSION)
 
-          # Install pnpm
           - script: |
               npm install -g pnpm@$(PNPM_VERSION)
             displayName: 'Install pnpm'
 
-          # Install Node dependencies
           - script: |
               pnpm install --frozen-lockfile
             displayName: 'Install Node Dependencies'
 
-          # Setup PHP
           - script: |
               sudo update-alternatives --set php /usr/bin/php$(PHP_VERSION)
             displayName: 'Setup PHP $(PHP_VERSION)'
 
-          # Install Composer dependencies
           - script: |
               cd apps/showcase
               composer install --no-interaction --prefer-dist --optimize-autoloader
             displayName: 'Install Composer Dependencies'
 
-          # Run tests with coverage
           - script: |
-              pnpm test:coverage
+              pnpm --filter @reference-app-laravel-vue/showcase test:coverage
             displayName: 'Run Frontend Tests with Coverage'
             continueOnError: true
 
-          # Setup Laravel for backend tests
           - script: |
               cd apps/showcase
               cp .env.example .env
               php artisan key:generate
             displayName: 'Setup Laravel Environment'
 
-          # Run backend tests with coverage
           - script: |
               cd apps/showcase
               php artisan test --coverage-xml=coverage/coverage.xml --coverage-html=coverage/html
             displayName: 'Run Backend Tests with Coverage'
             continueOnError: true
 
-          # SonarQube: Prepare Analysis
           - task: SonarCloudPrepare@2
             displayName: 'Prepare SonarCloud Analysis'
             inputs:
@@ -270,65 +214,14 @@ stages:
               scannerMode: 'CLI'
               configMode: 'file'
 
-          # SonarQube: Run Analysis
           - task: SonarCloudAnalyze@2
             displayName: 'Run SonarCloud Analysis'
 
-          # SonarQube: Publish Quality Gate Result
           - task: SonarCloudPublish@2
             displayName: 'Publish SonarCloud Quality Gate Result'
             inputs:
               pollingTimeoutSec: '300'
 
-      # Build Libraries (when BUILD_LIBS=true)
-      - job: BuildLibs
-        displayName: 'Build Libraries'
-        dependsOn:
-          - FrontendQuality
-          - FrontendTests
-          - SonarQubeAnalysis
-        condition: and(succeededOrFailed(), eq(variables['BUILD_LIBS'], 'true'))
-        pool:
-          vmImage: 'ubuntu-latest'
-        steps:
-          # Install Node.js
-          - task: NodeTool@0
-            displayName: 'Install Node.js'
-            inputs:
-              versionSpec: $(NODE_VERSION)
-
-          # Cache pnpm store
-          - task: Cache@2
-            displayName: 'Cache pnpm store'
-            inputs:
-              key: 'pnpm | "$(Agent.OS)" | pnpm-lock.yaml'
-              path: $(PNPM_HOME)/store
-              restoreKeys: |
-                pnpm | "$(Agent.OS)"
-
-          # Install pnpm
-          - script: |
-              npm install -g pnpm@$(PNPM_VERSION)
-            displayName: 'Install pnpm'
-
-          # Install Node dependencies
-          - script: |
-              pnpm install --frozen-lockfile
-            displayName: 'Install Node Dependencies'
-
-          # Build libraries (ui-kit)
-          - script: |
-              pnpm --filter @reference-app-laravel-vue/ui-kit build
-            displayName: 'Build Libraries (ui-kit)'
-
-          # Publish ui-kit library artifact
-          - task: PublishBuildArtifacts@1
-            displayName: 'Publish UI Kit Library Artifact'
-            inputs:
-              PathtoPublish: 'libs/ui-kit'
-              ArtifactName: 'reference-app-laravel-vue-ui-kit'
-
-      # Build Application (when BUILD_APP=true)
       - job: BuildApp
         displayName: 'Build Application'
         dependsOn:
@@ -336,18 +229,15 @@ stages:
           - FrontendTests
           - BackendQuality
           - SonarQubeAnalysis
-          - BuildLibs
-        condition: and(succeededOrFailed(), eq(variables['BUILD_APP'], 'true'))
+        condition: succeededOrFailed()
         pool:
           vmImage: 'ubuntu-latest'
         steps:
-          # Install Node.js
           - task: NodeTool@0
             displayName: 'Install Node.js'
             inputs:
               versionSpec: $(NODE_VERSION)
 
-          # Cache pnpm store
           - task: Cache@2
             displayName: 'Cache pnpm store'
             inputs:
@@ -356,22 +246,18 @@ stages:
               restoreKeys: |
                 pnpm | "$(Agent.OS)"
 
-          # Install pnpm
           - script: |
               npm install -g pnpm@$(PNPM_VERSION)
             displayName: 'Install pnpm'
 
-          # Install Node dependencies
           - script: |
               pnpm install --frozen-lockfile
             displayName: 'Install Node Dependencies'
 
-          # Setup PHP
           - script: |
               sudo update-alternatives --set php /usr/bin/php$(PHP_VERSION)
             displayName: 'Setup PHP $(PHP_VERSION)'
 
-          # Cache Composer dependencies
           - task: Cache@2
             displayName: 'Cache Composer dependencies'
             inputs:
@@ -380,117 +266,24 @@ stages:
               restoreKeys: |
                 composer | "$(Agent.OS)"
 
-          # Install Composer dependencies (production)
           - script: |
               cd apps/showcase
               composer install --no-interaction --prefer-dist --optimize-autoloader --no-dev
             displayName: 'Install Composer Dependencies (Production)'
 
-          # Build frontend assets with Vite
-
           - script: |
-              pnpm build:prod
+              pnpm --filter @reference-app-laravel-vue/showcase build:prod
             displayName: 'Build Frontend Assets (Vite)'
 
-          # Publish application artifact
           - task: PublishBuildArtifacts@1
             displayName: 'Publish Application Artifact'
             inputs:
               PathtoPublish: 'apps/showcase'
               ArtifactName: 'reference-app-laravel-vue-showcase'
 
-  - stage: PublishLibs
-    displayName: 'Publish Libraries to Registries'
-    dependsOn: Build
-    condition: and(succeeded(), or(eq(variables['Build.SourceBranch'], 'refs/heads/main'), eq(variables['Build.SourceBranch'], 'refs/heads/develop')), eq(variables['BUILD_LIBS'], 'true'))
-    jobs:
-      - job: PublishToNpm
-        displayName: 'Publish Libraries to npm'
-        condition: eq(variables['Build.SourceBranch'], 'refs/heads/main')
-        pool:
-          vmImage: 'ubuntu-latest'
-        steps:
-          # Install Node.js
-          - task: NodeTool@0
-            displayName: 'Install Node.js'
-            inputs:
-              versionSpec: $(NODE_VERSION)
-
-          # Download ui-kit library artifact
-          - download: current
-            artifact: reference-app-laravel-vue-ui-kit
-            displayName: 'Download UI Kit Library Artifact'
-
-          # Configure npm registry authentication
-          - script: |
-              echo "//registry.npmjs.org/:_authToken=$(NPM_TOKEN)" > ~/.npmrc
-            displayName: 'Configure npm Authentication'
-            env:
-              NPM_TOKEN: $(NPM_TOKEN)
-
-          # Publish ui-kit library to npm
-          - script: |
-              cd $(Pipeline.Workspace)/reference-app-laravel-vue-ui-kit
-              npm publish --access public
-            displayName: 'Publish UI Kit Library to npm'
-            env:
-              NODE_AUTH_TOKEN: $(NPM_TOKEN)
-
-      - job: PublishToAzureArtifactsRelease
-        displayName: 'Publish Libraries to Azure Artifacts Release Feed'
-        condition: eq(variables['Build.SourceBranch'], 'refs/heads/main')
-        pool:
-          vmImage: 'ubuntu-latest'
-        steps:
-          # Install Node.js
-          - task: NodeTool@0
-            displayName: 'Install Node.js'
-            inputs:
-              versionSpec: $(NODE_VERSION)
-
-          # Download ui-kit library artifact
-          - download: current
-            artifact: reference-app-laravel-vue-ui-kit
-            displayName: 'Download UI Kit Library Artifact'
-
-          # Publish ui-kit library to Azure Artifacts npm release feed
-          - task: Npm@1
-            displayName: 'Publish UI Kit Library to ahi-release Feed'
-            inputs:
-              command: 'publish'
-              workingDir: '$(Pipeline.Workspace)/reference-app-laravel-vue-ui-kit'
-              publishRegistry: 'useFeed'
-              publishFeed: 'ParthenOS/ahi-release'
-
-      - job: PublishToAzureArtifactsSnapshot
-        displayName: 'Publish Libraries to Azure Artifacts Snapshot Feed'
-        condition: eq(variables['Build.SourceBranch'], 'refs/heads/develop')
-        pool:
-          vmImage: 'ubuntu-latest'
-        steps:
-          # Install Node.js
-          - task: NodeTool@0
-            displayName: 'Install Node.js'
-            inputs:
-              versionSpec: $(NODE_VERSION)
-
-          # Download ui-kit library artifact
-          - download: current
-            artifact: reference-app-laravel-vue-ui-kit
-            displayName: 'Download UI Kit Library Artifact'
-
-          # Publish ui-kit library to Azure Artifacts npm snapshot feed
-          - task: Npm@1
-            displayName: 'Publish UI Kit Library to ahi-snapshot Feed'
-            inputs:
-              command: 'publish'
-              workingDir: '$(Pipeline.Workspace)/reference-app-laravel-vue-ui-kit'
-              publishRegistry: 'useFeed'
-              publishFeed: 'ParthenOS/ahi-snapshot'
-
   - stage: DeployDev
     displayName: 'Deploy to Development'
-    dependsOn: Build
+    dependsOn: BuildShowcase
     condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/develop'))
     jobs:
       - deployment: DeployDev
@@ -525,7 +318,7 @@ stages:
 
   - stage: DeployProd
     displayName: 'Deploy to Production'
-    dependsOn: Build
+    dependsOn: BuildShowcase
     condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/main'))
     jobs:
       - deployment: DeployProd
@@ -578,27 +371,16 @@ stages:
         pool:
           vmImage: 'ubuntu-latest'
         steps:
-          # Setup Python
           - task: UsePythonVersion@0
             displayName: 'Use Python 3.11'
             inputs:
               versionSpec: '3.11'
               addToPath: true
 
-          # Install Python dependencies
           - script: |
               pip install requests
             displayName: 'Install Python Dependencies'
 
-          # Upload documentation to Confluence
-          # REQUIRED pipeline secrets (sensitive credentials):
-          # - CONFLUENCE_USERNAME (user email)
-          # - CONFLUENCE_API_TOKEN (API token from Atlassian)
-          #
-          # OPTIONAL pipeline variable (has default in confluence_config.json):
-          # - CONFLUENCE_BASE_URL (default: https://ahi-service.atlassian.net/wiki)
-          #
-          # SPACE_KEY, PARENT_ID and PROJECT_NAME are read from scripts/confluence_config.json (committed to repo)
           - script: |
               cd scripts
               python upload_confluence.py

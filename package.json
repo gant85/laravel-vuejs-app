@@ -1,6 +1,6 @@
 {
   "name": "@reference-app-laravel-vue/root",
-  "version": "1.0.0",
+  "version": "1.0.0-SNAPSHOT",
   "private": true,
   "description": "POC Full Stack Laravel + Vue + Inertia with Material 3",
   "scripts": {
@@ -27,7 +27,12 @@
     "docker:azure:up": "docker compose -f docker-compose.yml -f docker-compose.azure.yml up -d",
     "docker:azure:down": "docker compose -f docker-compose.yml -f docker-compose.azure.yml down",
     "docker:azure:logs": "docker compose -f docker-compose.yml -f docker-compose.azure.yml logs -f",
+    "docs:ui-kit": "python scripts/generate_ui_kit_readme.py",
+    "docs:ui-kit:check": "python scripts/generate_ui_kit_readme.py --check",
     "docs:confluence": "python scripts/upload_confluence.py",
+    "docs:confluence:single": "python scripts/upload_confluence.py --action upload-single",
+    "docs:confluence:delete": "python scripts/upload_confluence.py --action delete",
+    "docs:confluence:delete-children": "python scripts/upload_confluence.py --action delete-children",
     "prepare": "lefthook install",
     "commitlint": "commitlint --edit",
     "check-versions": "node --version && pnpm --version && echo \"Expected Node: $(cat .node-version)\""

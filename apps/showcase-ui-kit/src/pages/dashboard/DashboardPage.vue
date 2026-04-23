@@ -162,6 +162,11 @@ const cards = ref<Card[]>([
     link: '/components/progress-indicators-demo',
   },
   {
+    title: 'Radio Buttons',
+    description: 'Radio buttons allow users to select a single option from a set of mutually exclusive choices.',
+    link: '/components/radio-buttons-demo',
+  },
+  {
     title: 'Selection Controls',
     description: 'Selection controls allow users to select options.',
     link: '/components/selection-controls-demo',

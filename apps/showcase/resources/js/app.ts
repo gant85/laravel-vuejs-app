@@ -13,11 +13,36 @@ import {
   componentDefaults,
   palettes,
 } from '@reference-app-laravel-vue/ui-kit';
-import { initOpenTelemetry } from './telemetry';
 import type { IconProps } from 'vuetify';
 
-// Initialize OpenTelemetry tracing
-initOpenTelemetry();
+function scheduleTelemetryInit() {
+  const telemetryEnabled =
+    import.meta.env.PROD || import.meta.env.VITE_TELEMETRY_ENABLED === 'true';
+
+  if (!telemetryEnabled) {
+    return;
+  }
+
+  const init = async () => {
+    const { initOpenTelemetry } = await import('./telemetry');
+    initOpenTelemetry();
+  };
+
+  if ('requestIdleCallback' in window) {
+    window.requestIdleCallback(() => {
+      void init();
+    });
+
+    return;
+  }
+
+  setTimeout(() => {
+    void init();
+  }, 0);
+}
+
+// Defer telemetry bootstrap to avoid slowing down initial app rendering.
+scheduleTelemetryInit();
 
 const appName = import.meta.env.VITE_APP_NAME || 'Showcase Application';
 

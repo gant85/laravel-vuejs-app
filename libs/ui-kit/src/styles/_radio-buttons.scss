@@ -1,0 +1,7 @@
+@mixin overrides {
+  .v-radio {
+    .v-selection-control__input > .v-icon {
+      opacity: 1;
+    }
+  }
+}

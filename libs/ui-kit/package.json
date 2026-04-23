@@ -1,7 +1,6 @@
 {
   "name": "@reference-app-laravel-vue/ui-kit",
-  "version": "1.0.0",
-  "private": true,
+  "version": "1.0.0-SNAPSHOT",
   "type": "module",
   "main": "./dist/ui-kit.umd.js",
   "module": "./dist/ui-kit.es.js",
