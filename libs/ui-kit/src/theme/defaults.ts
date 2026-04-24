@@ -56,6 +56,7 @@ export const componentDefaults = {
 
   VCheckbox: {
     color: 'primary',
+    baseColor: 'primary',
   },
 
   VRadio: {

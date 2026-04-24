@@ -3,6 +3,7 @@
 // Each component file exposes an `overrides` mixin with its CSS rules.
 @use 'buttons';
 @use 'cards';
+@use 'checkboxes';
 @use 'dialogs';
 @use 'labels';
 @use 'radio-buttons';
@@ -11,6 +12,7 @@
 @use 'typography';
 @include buttons.overrides;
 @include cards.overrides;
+@include checkboxes.overrides;
 @include dialogs.overrides;
 @include labels.overrides;
 @include radio-buttons.overrides;

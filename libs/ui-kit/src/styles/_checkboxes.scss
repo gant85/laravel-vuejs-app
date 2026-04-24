@@ -1,0 +1,22 @@
+// CSS overrides (emitted via overrides.scss)
+@mixin overrides {
+  .v-checkbox {
+    .v-selection-control__input > .v-icon {
+      opacity: 1;
+    }
+
+    .v-selection-control__wrapper {
+      &.text-error {
+        .material-symbols-outlined {
+          color: rgb(var(--v-theme-error)) !important;
+        }
+      }
+
+      &:has(input:not(:checked, [aria-checked='mixed'])) {
+        .material-symbols-outlined {
+          color: rgb(var(--v-theme-on-surface-variant));
+        }
+      }
+    }
+  }
+}
