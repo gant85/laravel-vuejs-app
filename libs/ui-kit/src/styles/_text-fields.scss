@@ -1,0 +1,184 @@
+/* stylelint-disable */
+@use 'typography';
+
+@mixin overrides {
+  .v-text-field {
+    &:not(.v-input--focused, .v-input--error) {
+      .v-input__control:hover {
+        background-color: rgb(var(--v-theme-primary), 0.08);
+        border-radius: 2px;
+
+        .v-field__outline {
+          .v-field__outline__start,
+          .v-field__outline__notch,
+          .v-field__outline__end {
+            border-color: rgb(var(--v-theme-primary));
+          }
+        }
+      }
+    }
+
+    .v-input__control {
+      .v-field__prepend-inner .v-icon,
+      .v-field__clearable .v-icon,
+      input {
+        color: rgb(var(--v-theme-on-surface)) !important;
+        opacity: 1;
+      }
+    }
+
+    .v-input__details {
+      min-height: 16px;
+      padding-top: 0;
+      padding-left: 0 !important;
+
+      .v-messages {
+        @include typography.text-style('label', 'extra-small');
+
+        color: rgb(var(--v-theme-on-surface-variant));
+        opacity: 1;
+      }
+    }
+
+    // placeholder
+    .v-field__input {
+      &::placeholder {
+        font-weight: 300;
+        color: rgb(var(--v-theme-on-surface-variant));
+        opacity: 1;
+      }
+    }
+
+    // disabled state
+    .v-field--disabled {
+      background-color: rgb(var(--v-theme-surface-container));
+
+      .v-field__prepend-inner .v-icon,
+      input {
+        color: rgb(var(--v-theme-on-surface-variant)) !important;
+      }
+    }
+
+    // error state
+    .v-field--error {
+      &:not(.v-field--focused) {
+        input {
+          color: rgb(var(--v-theme-error)) !important;
+        }
+      }
+    }
+  }
+
+  // Label customization
+  .ah-input-field {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    max-width: 400px;
+
+    &:focus-within .v-label {
+      color: rgb(var(--v-theme-primary));
+    }
+
+    &:has(.v-field--error) .v-label {
+      color: rgb(var(--v-theme-error)) !important;
+    }
+
+    &:has(.v-field--disabled) .v-label {
+      color: rgb(var(--v-theme-on-surface)) !important;
+      opacity: var(--v-disabled-opacity);
+    }
+
+    .v-label {
+      opacity: 1;
+      margin-bottom: 2px;
+
+      @include typography.text-style('label', 'extra-small');
+    }
+  }
+
+  .ah-input-field-full {
+    @extend .ah-input-field;
+    max-width: 100%;
+  }
+
+  // customizzations for combobox and autocomplete panels
+  .v-overlay__content {
+    &.v-combobox__content,
+    &.v-autocomplete__content {
+      box-shadow: 0px 1px 3px 0px rgba(0, 0, 0, 0.2);
+      border-radius: 2px !important;
+      .v-list {
+        padding: 0;
+        border: 1px solid rgb(var(--v-theme-outline));
+
+        // Case where the list has at least one item with a subtitle
+        &:has(.v-list-item-subtitle) {
+          .v-list-item {
+            height: 52px !important;
+            min-height: 52px !important;
+
+            .v-list-item__prepend {
+              align-self: baseline;
+              margin-top: 2px;
+            }
+
+            // Case where the item does not have a subtitle within a list containing at least one item with a subtitle
+            &:not(:has(.v-list-item-subtitle)) {
+              .v-list-item__content {
+                align-self: flex-start;
+                margin-top: 11px;
+              }
+            }
+          }
+        }
+
+        .v-list-item {
+          background-color: rgb(var(--v-theme-surface-container-lowest));
+          min-height: 40px;
+          color: rgb(var(--v-theme-on-surface));
+          opacity: 1;
+
+          &:has(.v-list-item__prepend .v-selection-control) {
+            padding-inline: 2px 12px;
+            padding-top: 1px;
+            padding-bottom: 1px;
+          }
+
+          &.v-list-item--disabled {
+            background-color: rgb(var(--v-theme-on-secondary-fixed-variant), 0.08);
+          }
+
+          &.v-list-item--active {
+            background-color: rgb(var(--v-theme-secondary-container), 0.95);
+            &:hover {
+              background-color: rgb(var(--v-theme-primary-fixed-dim), 0.36);
+            }
+
+            .v-list-item__content {
+              color: rgb(var(--v-theme-on-surface));
+            }
+          }
+
+          &:hover {
+            background-color: rgb(var(--v-theme-secondary-fixed-dim), 0.18);
+          }
+
+          .v-list-item-title {
+            font-size: 14px;
+            line-height: 18px;
+          }
+
+          .v-list-item-subtitle {
+            font-size: 10px;
+            line-height: 10px;
+          }
+
+          .v-list-item__overlay {
+            display: none;
+          }
+        }
+      }
+    }
+  }
+}

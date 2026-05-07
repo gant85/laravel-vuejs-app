@@ -27,12 +27,4 @@ const router = useRouter();
   font-size: 0.875rem;
   line-height: 1.25rem;
 }
-
-.material-symbols-outlined {
-  font-variation-settings:
-    'FILL' 0,
-    'wght' 300,
-    'GRAD' 0,
-    'opsz' 24;
-}
 </style>

@@ -47,11 +47,6 @@ const router = createRouter({
       component: () => import('../pages/components/badges/BadgesDemo.vue'),
     },
     {
-      path: '/components/bottom-sheet',
-      name: 'BottomSheetDemo',
-      component: () => import('../pages/components/bottom-sheet/BottomSheetDemo.vue'),
-    },
-    {
       path: '/components/buttons-demo',
       name: 'ButtonsDemo',
       component: () => import('../pages/components/buttons/ButtonsDemo.vue'),
@@ -77,11 +72,6 @@ const router = createRouter({
       component: () => import('../pages/components/dividers/DividersDemo.vue'),
     },
     {
-      path: '/components/drop-downs-demo',
-      name: 'DropDownsDemo',
-      component: () => import('../pages/components/drop-downs/DropDownsDemo.vue'),
-    },
-    {
       path: '/components/elevations-demo',
       name: 'ElevationsDemo',
       component: () => import('../pages/components/elevations/ElevationsDemo.vue'),
@@ -92,19 +82,24 @@ const router = createRouter({
       component: () => import('../pages/components/expansion-panels/ExpansionPanelsDemo.vue'),
     },
     {
+      path: '/components/input-chips-demo',
+      name: 'InputChipsDemo',
+      component: () => import('../pages/components/input-chips/InputChipsDemo.vue'),
+    },
+    {
       path: '/components/labels-demo',
       name: 'LabelsDemo',
       component: () => import('../pages/components/labels/LabelsDemo.vue'),
     },
     {
-      path: '/components/menus-demo',
-      name: 'MenusDemo',
-      component: () => import('../pages/components/menus/MenusDemo.vue'),
+      path: '/components/labels-demo',
+      name: 'LabelsDemo',
+      component: () => import('../pages/components/labels/LabelsDemo.vue'),
     },
     {
-      path: '/components/message-bar-demo',
-      name: 'MessageBarDemo',
-      component: () => import('../pages/components/message-bar/MessageBarDemo.vue'),
+      path: '/components/snackbars-demo',
+      name: 'SnackbarsDemo',
+      component: () => import('../pages/components/snackbars/SnackbarsDemo.vue'),
     },
     {
       path: '/components/panels-demo',
@@ -122,9 +117,9 @@ const router = createRouter({
       component: () => import('../pages/components/radio-buttons/RadioButtonsDemo.vue'),
     },
     {
-      path: '/components/selection-controls-demo',
-      name: 'SelectionControlsDemo',
-      component: () => import('../pages/components/selection-controls/SelectionControlsDemo.vue'),
+      path: '/components/check-boxes-demo',
+      name: 'CheckBoxesDemo',
+      component: () => import('../pages/components/check-boxes/CheckBoxesDemo.vue'),
     },
     {
       path: '/components/switches-demo',

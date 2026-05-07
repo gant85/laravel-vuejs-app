@@ -1,77 +1,104 @@
-@use 'typography';
-
-// CSS overrides for MD3-compliant Label component.
 @mixin overrides {
-  // ── Base ────────────────────────────────────────────────────────────
-  // Anatomy border-radius: 2px (Figma "Labels Component").
-  .ui-label.v-chip {
-    border-radius: 2px !important;
-  }
+  .ah-label {
+    display: flex;
+    gap: 4px;
+    align-items: center;
+    justify-content: center;
+    color: rgb(var(--v-theme-primary));
+    background-color: rgb(var(--v-theme-primary-container));
+    border: 1px solid rgb(var(--v-theme-primary));
+    border-radius: 2px;
 
-  // Icon-to-text spacing: 2px gap for all sizes.
-  .ui-label .v-chip__prepend {
-    margin-inline: 0 2px;
-  }
+    &.x-large {
+      height: 32px;
+      padding: 0 8px 0 6px;
+      font-size: 12px;
+      line-height: 12px;
 
-  // ── Extra-large (32 px) ────────────────────────────────────────────
-  // Text style: AH/label/medium-sb (0.75 rem / 1 rem / 600).
-  .ui-label--extra-large.v-chip {
-    min-width: 32px;
-    height: 32px;
-    padding: 0 4px;
+      .v-icon--size-default {
+        font-size: 20px;
+      }
+    }
 
-    @include typography.text-style('label', 'medium', 'semibold');
-  }
+    &.large {
+      height: 24px;
+      padding: 0 6px 0 4px;
+      font-size: 12px;
+      line-height: 12px;
 
-  .ui-label--extra-large .v-icon {
-    font-size: 16px !important;
-  }
+      .v-icon--size-default {
+        font-size: 16px;
+      }
+    }
 
-  // ── Large (24 px) ──────────────────────────────────────────────────
-  // Text style: AH/label/medium-sb. Item spacing: 2px.
-  .ui-label--large.v-chip {
-    min-width: 24px;
-    height: 24px;
-    padding: 0 4px;
+    &.medium {
+      height: 20px;
+      padding: 0 6px 0 4px;
+      font-size: 10px;
+      line-height: 10px;
 
-    @include typography.text-style('label', 'medium', 'semibold');
-  }
+      .v-icon--size-default {
+        font-size: 12px;
+      }
+    }
 
-  .ui-label--large .v-icon {
-    font-size: 14px !important;
-  }
+    &.small {
+      gap: 2px !important;
+      height: 16px;
+      padding: 0 4px 0 2px;
+      font-size: 10px;
+      line-height: 10px;
 
-  // ── Medium (20 px) ─────────────────────────────────────────────────
-  // Text style: AH/label/extra-small-sb (0.625 rem / 0.875 rem / 600).
-  .ui-label--medium.v-chip {
-    min-width: 20px;
-    height: 20px;
-    padding: 0 4px;
+      .v-icon--size-default {
+        font-size: 12px;
+      }
+    }
 
-    @include typography.text-style('label', 'extra-small', 'semibold');
-  }
+    &.variant-tonal {
+      border: none !important;
 
-  .ui-label--medium .v-icon {
-    font-size: 12px !important;
-  }
+      &.important {
+        background-color: rgb(var(--v-theme-surface-container-low));
+      }
 
-  // ── Small (16 px) ──────────────────────────────────────────────────
-  // Text style: AH/label/extra-small-sb. Tighter padding (2 px).
-  .ui-label--small.v-chip {
-    min-width: 16px;
-    height: 16px;
-    padding: 0 2px;
+      &.info {
+        background-color: rgb(var(--v-theme-info));
+      }
+    }
 
-    @include typography.text-style('label', 'extra-small', 'semibold');
-  }
+    &.variant-text {
+      background-color: transparent !important;
+      border: none !important;
+    }
 
-  .ui-label--small .v-icon {
-    font-size: 10px !important;
-  }
+    &.error {
+      color: rgb(var(--v-theme-error));
+      background-color: rgb(var(--v-theme-error-container));
+      border-color: rgb(var(--v-theme-error));
+    }
 
-  // ── Tint appearance border ─────────────────────────────────────────
-  // Figma: border-weight 1px for Tint appearance.
-  .ui-label--tint.v-chip {
-    border: 1px solid currentcolor !important;
+    &.warning {
+      color: rgb(var(--v-theme-on-warning-container));
+      background-color: rgb(var(--v-theme-warning-container));
+      border-color: rgb(var(--v-theme-on-warning-container));
+    }
+
+    &.success {
+      color: rgb(var(--v-theme-on-success-container));
+      background-color: rgb(var(--v-theme-success-container));
+      border-color: rgb(var(--v-theme-on-success-container));
+    }
+
+    &.important {
+      color: rgb(var(--v-theme-on-surface));
+      background-color: rgb(var(--v-theme-surface));
+      border-color: rgb(var(--v-theme-on-surface));
+    }
+
+    &.info {
+      color: rgb(var(--v-theme-on-info));
+      background-color: rgb(var(--v-theme-info-container));
+      border-color: rgb(var(--v-theme-on-info));
+    }
   }
 }

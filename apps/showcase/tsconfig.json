@@ -1,5 +1,6 @@
 {
   "compilerOptions": {
+    "ignoreDeprecations": "6.0",
     "target": "ES2020",
     "useDefineForClassFields": true,
     "module": "ESNext",
@@ -21,7 +22,6 @@
     "noFallthroughCasesInSwitch": true,
 
     /* Path aliases */
-    "baseUrl": ".",
     "paths": {
       "@/*": ["./resources/js/*"],
       "@reference-app-laravel-vue/ui-kit": ["../../libs/ui-kit/src/index.ts"]

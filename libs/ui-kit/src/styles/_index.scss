@@ -1,14 +1,22 @@
+@use 'buttons';
 @use 'dialogs';
+@use 'snackbars';
 
 // Design tokens from @reference-app-laravel-vue/ui-kit
 // Source of truth: libs/ui-kit/src/styles/, libs/ui-kit/src/theme/typography.ts
-$button-border-radius: 2px;
+
 $card-border-radius: 1px;
 $body-font-family: 'Open Sans Variable', sans-serif;
 
 @use 'vuetify/settings' with (
   $body-font-family: $body-font-family,
-  $button-border-radius: $button-border-radius,
+
+  //Buttons
+  $button-border-radius: buttons.$border-radius,
+  $button-text-transform: buttons.$text-transform,
+  $button-font-weight: buttons.$font-weight,
+  $button-colored-disabled: buttons.$colored-disabled,
+  $button-disabled-opacity: buttons.$disabled-opacity,
   $card-border-radius: $card-border-radius,
 
   //Badges
@@ -22,5 +30,23 @@ $body-font-family: 'Open Sans Variable', sans-serif;
 
   //Dialogs
   $overlay-opacity: dialogs.$overlay-opacity,
-  $overlay-scrim-background: dialogs.$overlay-scrim-background
+  $overlay-scrim-background: dialogs.$overlay-scrim-background,
+
+  //Chips
+  $chip-font-size: 12px,
+  $chip-height: 22px,
+
+  // combobox
+  $combobox-content-border-radius: 2px,
+
+  //SnackBar
+  $snackbar-content-padding: snackbars.$content-padding,
+
+  //Tooltips
+  $tooltip-border-radius: 3px,
+  $tooltip-background-color: rgb(var(--v-theme-inverse-surface)),
+  $tooltip-padding: 4px 8px,
+  $tooltip-font-size: 12px,
+  $tooltip-line-height: 16px,
+  $tooltip-text-color: rgb(var(--v-theme-on-inverse-surface))
 );

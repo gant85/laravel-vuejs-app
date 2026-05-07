@@ -19,12 +19,7 @@
           <HighlightedCode :code="examples.basicDialog"></HighlightedCode>
         </v-sheet>
         <div class="mt-4">
-          <v-btn
-            color="primary"
-            variant="flat"
-            @click="basicDialog = true"
-            >Open basic dialog</v-btn
-          >
+          <v-btn @click="basicDialog = true">Open basic dialog</v-btn>
           <v-dialog
             v-model="basicDialog"
             max-width="560"
@@ -38,6 +33,7 @@
               <template v-slot:append>
                 <v-btn
                   icon="close"
+                  color="on-surface-variant"
                   variant="text"
                   @click="basicDialog = false"></v-btn>
               </template>
@@ -47,19 +43,12 @@
               </v-card-text>
               <v-card-actions>
                 <v-spacer />
-                <Button
-                  size="small"
+                <v-btn
                   @click="basicDialog = false"
                   variant="outlined">
                   Close
-                </Button>
-                <Button
-                  size="small"
-                  color="primary"
-                  variant="flat"
-                  @click="basicDialog = false">
-                  Ok
-                </Button>
+                </v-btn>
+                <v-btn @click="basicDialog = false"> Ok </v-btn>
               </v-card-actions>
             </v-card>
           </v-dialog>
@@ -81,12 +70,7 @@
         </v-sheet>
 
         <div class="mt-4">
-          <v-btn
-            color="primary"
-            variant="flat"
-            @click="listDialog = true"
-            >Open list dialog</v-btn
-          >
+          <v-btn @click="listDialog = true">Open list dialog</v-btn>
           <v-dialog
             class="scrollable"
             v-model="listDialog"
@@ -101,6 +85,7 @@
                 <v-btn
                   icon="close"
                   variant="text"
+                  color="on-surface-variant"
                   @click="listDialog = false"></v-btn>
               </template>
               <v-card-text class="text-body-medium">
@@ -119,19 +104,12 @@
               </v-card-text>
               <v-card-actions>
                 <v-spacer />
-                <Button
-                  size="small"
+                <v-btn
                   @click="listDialog = false"
                   variant="outlined">
                   Close
-                </Button>
-                <Button
-                  size="small"
-                  color="primary"
-                  variant="flat"
-                  @click="listDialog = false">
-                  Ok
-                </Button>
+                </v-btn>
+                <v-btn @click="listDialog = false"> Ok </v-btn>
               </v-card-actions>
             </v-card>
           </v-dialog>
@@ -157,7 +135,6 @@
 
 <script setup lang="ts">
 import { ref } from 'vue';
-import { Button } from '@reference-app-laravel-vue/ui-kit';
 import HighlightedCode from '../../../components/HighlightedCode.vue';
 
 const basicDialog = ref(false);
@@ -165,14 +142,14 @@ const listDialog = ref(false);
 
 const examples = {
   basicDialog: `
-  <v-btn color="primary" variant="flat" @click="basicDialog = true">Open basic dialog</v-btn>
+  <v-btn @click="basicDialog = true">Open basic dialog</v-btn>
   <v-dialog v-model="basicDialog" max-width="560" min-width="380">
     <v-card elevation="0" prepend-icon="star">
       <template v-slot:title>
         <span class="text-body-large-sb">Basic dialog title</span>
       </template>
       <template v-slot:append>
-        <v-btn icon="close" variant="text" @click="basicDialog = false"></v-btn>
+        <v-btn icon="close" variant="text" color="on-surface-variant" @click="basicDialog = false"></v-btn>
       </template>
       <v-card-text class="text-body-medium">
           This is a basic dialog with some content. Dialogs are useful for displaying
@@ -180,24 +157,24 @@ const examples = {
       </v-card-text>
       <v-card-actions>
         <v-spacer />
-        <Button size="small" @click="basicDialog = false" variant="outlined">
+        <v-btn @click="basicDialog = false" variant="outlined">
           Close
-        </Button>
-        <Button size="small" color="primary" variant="flat" @click="basicDialog = false">
+        </v-btn>
+        <v-btn @click="basicDialog = false">
           Ok
-        </Button>
+        </v-btn>
       </v-card-actions>
     </v-card>
   </v-dialog>`,
   listDialog: `
-  <v-btn color="primary" variant="flat" @click="listDialog = true">Open list dialog</v-btn>
+  <v-btn @click="listDialog = true">Open list dialog</v-btn>
   <v-dialog class="scrollable" v-model="listDialog" max-width="560" min-width="380" max-height="500px">
     <v-card elevation="0">
     <template v-slot:title>
       <span class="text-body-large-sb">List dialog</span>
     </template>
     <template v-slot:append>
-      <v-btn icon="close" variant="text" @click="listDialog = false"></v-btn>
+      <v-btn icon="close" variant="text" color="on-surface-variant" @click="listDialog = false"></v-btn>
     </template>
     <v-card-text class="text-body-medium">
       <p>
@@ -212,12 +189,12 @@ const examples = {
       </v-card-text>
       <v-card-actions>
         <v-spacer />
-        <Button size="small" @click="listDialog = false" variant="outlined">
+        <v-btn @click="listDialog = false" variant="outlined">
           Close
-        </Button>
-        <Button size="small" color="primary" variant="flat" @click="listDialog = false">
+        </v-btn>
+        <v-btn @click="listDialog = false">
           Ok
-        </Button>
+        </v-btn>
       </v-card-actions>
     </v-card>
   </v-dialog>

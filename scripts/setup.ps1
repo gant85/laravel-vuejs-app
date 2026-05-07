@@ -139,6 +139,12 @@ Write-Host " Re-applying writable directory permissions..."
 docker exec reference-app-laravel-vue-php sh -lc "mkdir -p storage/logs bootstrap/cache storage/framework/views storage/framework/sessions storage/framework/cache/data && touch storage/logs/laravel.log && chown -R www-data:www-data storage bootstrap/cache && chmod -R ug+rwX storage bootstrap/cache && chmod 664 storage/logs/laravel.log"
 
 Write-Host ""
+Write-Host " Optimizing application performance..."
+docker exec --user www-data reference-app-laravel-vue-php php artisan optimize
+docker exec --user www-data reference-app-laravel-vue-php php artisan view:clear
+docker exec --user www-data reference-app-laravel-vue-php php artisan config:cache
+
+Write-Host ""
 Write-Host "======================================"
 Write-Host "    Setup completed successfully!"
 Write-Host "======================================"

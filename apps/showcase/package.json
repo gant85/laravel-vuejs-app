@@ -13,6 +13,7 @@
     "test:coverage": "vitest --coverage",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
+    "prelint": "echo 'Running pre-lint checks...'",
     "type-check": "pnpm exec vue-tsc --noEmit",
     "format": "prettier --write \"**/*.{js,ts,vue,css,scss,json,md}\"",
     "format:check": "prettier --check \"**/*.{js,ts,vue,css,scss,json,md}\"",
@@ -34,7 +35,7 @@
     "@reference-app-laravel-vue/ui-kit": "workspace:*",
     "axios": "^1.7.9",
     "vue": "^3.5.13",
-    "vuetify": "^3.7.6"
+    "vuetify": "3.12.4"
   },
   "devDependencies": {
     "@eslint/js": "^9.18.0",

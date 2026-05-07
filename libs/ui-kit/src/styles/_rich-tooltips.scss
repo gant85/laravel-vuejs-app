@@ -1,0 +1,10 @@
+@mixin overrides {
+  .v-menu.ah-rich-tooltip {
+    .v-overlay__content {
+      .v-card--density-default {
+        background: rgb(var(--v-theme-surface-container-lowest));
+        border-radius: 3px !important;
+      }
+    }
+  }
+}

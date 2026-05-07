@@ -3,6 +3,9 @@ import type { ThemeDefinition } from 'vuetify';
 
 export const lightTheme: ThemeDefinition = {
   dark: false,
+  variables: {
+    'disabled-opacity': 0.7,
+},
   colors: {
     // ── Core Key Colors ──────────────────────────────────────────────
     primary: palettes.primary[40],

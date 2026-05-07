@@ -97,8 +97,8 @@ if (-not $packageJson.dependencies) {
 
 $libsDir = Join-Path $repoRoot 'libs'
 $libPackageFiles = Get-ChildItem -Path $libsDir -Directory |
-  ForEach-Object { Join-Path $_.FullName 'package.json' } |
-  Where-Object { Test-Path $_ }
+ForEach-Object { Join-Path $_.FullName 'package.json' } |
+Where-Object { Test-Path $_ }
 
 foreach ($libPackageFile in $libPackageFiles) {
   $libPackage = Get-Content $libPackageFile -Raw | ConvertFrom-Json
@@ -145,7 +145,7 @@ foreach ($composeFile in @('docker-compose.yml', 'docker-compose.local.yml')) {
     $content = $content -replace "reference-app-laravel-vue", $AppName
     # Fix DB names or Otel names
     $content = $content -replace "showcase", $AppName
-    
+
     Set-Utf8NoBom -Path $destCompose -Content $content
   }
 }
@@ -153,7 +153,7 @@ foreach ($composeFile in @('docker-compose.yml', 'docker-compose.local.yml')) {
 if (Test-Path (Join-Path $repoRoot 'scripts')) {
   $targetScriptsDir = Join-Path $targetAppDir 'scripts'
   New-Item -ItemType Directory -Path $targetScriptsDir -Force | Out-Null
-  
+
   foreach ($setupFile in @('setup.ps1', 'setup.sh')) {
     $srcSetup = Join-Path $repoRoot "scripts/$setupFile"
     $destSetup = Join-Path $targetScriptsDir $setupFile
@@ -165,24 +165,77 @@ if (Test-Path (Join-Path $repoRoot 'scripts')) {
       $content = $content -replace "reference-app-laravel-vue", $AppName
       # Fix DB name and text references
       $content = $content -replace "showcase", $AppName
-      
+
       Set-Utf8NoBom -Path $destSetup -Content $content
     }
   }
+
+  $srcPhpLint = Join-Path $repoRoot 'scripts/php-lint.ps1'
+  $destPhpLint = Join-Path $targetScriptsDir 'php-lint.ps1'
+  if (Test-Path $srcPhpLint) {
+    $phpLintContent = Get-Content $srcPhpLint -Raw
+    $phpLintContent = $phpLintContent -replace "reference-app-laravel-vue", $AppName
+    Set-Utf8NoBom -Path $destPhpLint -Content $phpLintContent
+  }
 }
+
+# Copy pre-commit / pre-lint tooling configuration for standalone workflow.
+foreach ($toolingFile in @('lefthook.yml', 'commitlint.config.mjs', '.prettierrc', '.stylelintrc.json', '.editorconfig')) {
+  $srcTooling = Join-Path $repoRoot $toolingFile
+  $destTooling = Join-Path $targetAppDir $toolingFile
+  if (Test-Path $srcTooling) {
+    $content = Get-Content $srcTooling -Raw
+    $content = $content -replace "reference-app-laravel-vue", $AppName
+    $content = $content -replace "apps/showcase/\*\*/\*\.php", "**/*.php"
+    Set-Utf8NoBom -Path $destTooling -Content $content
+  }
+}
+
+# Ensure the generated app has required hook/lint dependencies and scripts.
+if (-not $packageJson.devDependencies) {
+  $packageJson | Add-Member -MemberType NoteProperty -Name devDependencies -Value ([ordered]@{})
+}
+
+$precommitDevDependencies = [ordered]@{
+  '@commitlint/cli'                 = '^20.3.1'
+  '@commitlint/config-conventional' = '^20.3.1'
+  'lefthook'                        = '^2.0.15'
+  'postcss-html'                    = '^1.8.0'
+  'postcss-scss'                    = '^4.0.9'
+  'prettier'                        = '^3.6.2'
+  'stylelint'                       = '^16.24.0'
+  'stylelint-config-recess-order'   = '^7.3.0'
+  'stylelint-config-standard'       = '^39.0.1'
+  'stylelint-config-standard-scss'  = '^16.0.0'
+  'stylelint-prettier'              = '^5.0.3'
+}
+
+foreach ($dep in $precommitDevDependencies.GetEnumerator()) {
+  $packageJson.devDependencies | Add-Member -MemberType NoteProperty -Name $dep.Key -Value $dep.Value -Force
+}
+
+if (-not $packageJson.scripts) {
+  $packageJson | Add-Member -MemberType NoteProperty -Name scripts -Value ([ordered]@{})
+}
+
+$packageJson.scripts | Add-Member -MemberType NoteProperty -Name prepare -Value 'lefthook install' -Force
+$packageJson.scripts | Add-Member -MemberType NoteProperty -Name commitlint -Value 'commitlint --edit' -Force
+
+$packageJsonText = $packageJson | ConvertTo-Json -Depth 100
+Set-Utf8NoBom -Path $targetPackageJsonPath -Content $packageJsonText
 
 Write-Host "Replacing 'showcase' with '$AppName' in all text files..."
 $validExts = @('.php', '.vue', '.ts', '.js', '.json', '.yml', '.yaml', '.md', '.scss', '.css', '.xml', '.html', '.sh', '.ps1')
 Get-ChildItem -Path $targetAppDir -Recurse -File | Where-Object {
-    $ext = $_.Extension.ToLower()
-    $name = $_.Name.ToLower()
-    $ext -in $validExts -or $name -like '.env*'
+  $ext = $_.Extension.ToLower()
+  $name = $_.Name.ToLower()
+  $ext -in $validExts -or $name -like '.env*'
 } | ForEach-Object {
-    $content = Get-Content $_.FullName -Raw
-    if ($content -match 'showcase') {
-        $content = $content -replace 'showcase', $AppName
-        Set-Utf8NoBom -Path $_.FullName -Content $content
-    }
+  $content = Get-Content $_.FullName -Raw
+  if ($content -match 'showcase') {
+    $content = $content -replace 'showcase', $AppName
+    Set-Utf8NoBom -Path $_.FullName -Content $content
+  }
 }
 
 # Generate Custom README.md

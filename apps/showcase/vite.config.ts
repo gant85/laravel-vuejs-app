@@ -41,6 +41,9 @@ export default defineConfig({
   resolve: {
     alias: {
       '@': fileURLToPath(new URL('./resources/js', import.meta.url)),
+      '@reference-app-laravel-vue/ui-kit/style.css': fileURLToPath(
+        new URL('./node_modules/@reference-app-laravel-vue/ui-kit/dist/ui-kit.css', import.meta.url)
+      ),
     },
   },
   server: {
@@ -50,42 +53,52 @@ export default defineConfig({
       host: 'localhost',
     },
     watch: {
-      usePolling: true,
+      // Disable polling for significant performance boost on Windows/WSL.
+      // Enable only if file changes are not detected.
+      usePolling: false,
     },
     fs: {
       allow: ['../..'],
     },
   },
   css: {
-    devSourcemap: false,
+    devSourcemap: true,
+    preprocessorOptions: {
+      sass: {
+        api: 'modern-compiler',
+      },
+    },
   },
   optimizeDeps: {
-    // Pre-scan all page entries to reduce mid-session dependency re-optimization.
+    // Pre-bundle core heavy dependencies for faster dev startup.
+    include: [
+      'vue',
+      '@inertiajs/vue3',
+      'axios',
+      'vuetify',
+      'vuetify/components',
+      'vuetify/directives',
+      '@reference-app-laravel-vue/ui-kit',
+      '@reference-app-laravel-vue/ui-kit/overrides',
+    ],
+    // Automatically discover other dependencies in pages.
     entries: ['resources/js/app.ts', 'resources/js/Pages/**/*.vue'],
-    // Keep linked workspace package and Vuetify out of pre-bundling to avoid stale chunk paths.
-    exclude: ['vuetify', '@reference-app-laravel-vue/ui-kit'],
   },
   build: {
     target: 'es2022',
     rollupOptions: {
       output: {
-        manualChunks: {
-          'vue-vendor': ['vue', '@inertiajs/vue3'],
-          vuetify: ['vuetify'],
-          telemetry: [
-            '@opentelemetry/api',
-            '@opentelemetry/auto-instrumentations-web',
-            '@opentelemetry/exporter-trace-otlp-http',
-            '@opentelemetry/instrumentation',
-            '@opentelemetry/resources',
-            '@opentelemetry/sdk-trace-base',
-            '@opentelemetry/sdk-trace-web',
-            '@opentelemetry/semantic-conventions',
-          ],
+        manualChunks: (id: string) => {
+          if (id.includes('node_modules')) {
+            if (id.includes('vuetify')) return 'vendor-vuetify';
+            if (id.includes('@opentelemetry')) return 'vendor-telemetry';
+            if (id.includes('vue') || id.includes('@inertiajs')) return 'vendor-vue';
+            return 'vendor-others';
+          }
         },
       },
     },
-    chunkSizeWarningLimit: 1000,
+    chunkSizeWarningLimit: 2000,
     minify: 'terser',
     terserOptions: {
       compress: {

@@ -26,16 +26,16 @@ resources:
     - repository: cicd-pipelines
       type: git
       name: DevOps/cicd-pipelines
-      ref: refs/heads/feature/ui-cicd-vue
+      ref: refs/heads/develop
 
 stages:
-  - template: ci/ui-build-vue.yml@cicd-pipelines
+  - template: ci/uis/ui-build-vue.yml@cicd-pipelines
     parameters:
       nodeVersion: ${{ parameters.nodeVersion }}
       pnpmVersion: ${{ parameters.pnpmVersion }}
       repoName: 'reference-app-laravel-vue'
       appName: 'ui-kit'
       packageFilter: 'ui-kit'
-      packagePath: 'libs/ui-kit'
       buildConfiguration: ${{ parameters.buildConfiguration }}
       stageName: 'BuildUIKit'
+      packagePath: 'libs/ui-kit'

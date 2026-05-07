@@ -1,74 +1,95 @@
-@use 'sass:list';
-@use 'sass:map';
+/* stylelint-disable */
 @use 'typography';
 
-// Variables (consumed by vuetify/settings via _index.scss)
 $border-radius: 2px;
-
-// CSS overrides (emitted via overrides.scss)
-// Each size maps to (height, padding)
-$button-sizes: (
-  'small': (
-    padding: 6px 12px,
-    height: 32px,
-    gap: 4px,
-    border-radius: 2px,
-  ),
-  'default': (
-    padding: 10px 16px,
-    height: 40px,
-    gap: 8px,
-    border-radius: 2px,
-  ),
-  'large': (
-    padding: 16px 24px,
-    height: 56px,
-    gap: 8px,
-    border-radius: 5px,
-  ),
-);
-
-// Typography per size: (role, size, weight)
-$button-typography: (
-  'small': (
-    'label',
-    'large',
-    'semibold',
-  ),
-  'default': (
-    'label',
-    'large',
-    'semibold',
-  ),
-  'large': (
-    'body',
-    'large',
-    'semibold',
-  ),
-);
+$text-transform: 'none';
+$font-weight: 600;
+$colored-disabled: false;
+$disabled-opacity: 0.36;
 
 @mixin overrides {
-  @each $size, $props in $button-sizes {
-    $typo: map.get($button-typography, $size);
-
-    // :not(.v-btn--icon) prevents overriding dimensions on icon-only buttons
-    .v-btn--size-#{$size}:not(.v-btn--icon) {
-      gap: map.get($props, gap) !important;
-      height: map.get($props, height) !important;
-      padding: map.get($props, padding) !important;
-      border-radius: map.get($props, border-radius) !important;
-
-      @include typography.text-style(list.nth($typo, 1), list.nth($typo, 2), list.nth($typo, 3));
+  .v-btn:not(.v-btn--icon) {
+    &::after {
+      display: none;
     }
-  }
 
-  .v-btn {
-    display: flex !important;
-    flex-direction: row !important;
-    text-transform: none !important;
+    .v-btn__overlay {
+      transition: none;
+    }
 
-    .v-btn__prepend {
-      margin: 0 !important;
+    &.bg-primary {
+      &.v-btn--variant-flat {
+        &:hover,
+        &:focus-visible {
+          .v-btn__overlay {
+            background-color: rgb(var(--v-theme-on-surface)) !important;
+            opacity: 0.08 !important;
+          }
+
+          .v-btn__content,
+          .v-btn__prepend {
+            z-index: 1;
+          }
+        }
+
+        .v-ripple__animation {
+          color: rgb(var(--v-theme-on-surface)) !important;
+          opacity: 0.08 !important;
+        }
+      }
+    }
+
+    &.text-primary {
+      &.v-btn--variant-outlined,
+      &.v-btn--variant-text {
+        &:hover,
+        &:focus-visible {
+          .v-btn__overlay {
+            background-color: rgb(var(--v-theme-primary)) !important;
+            opacity: 0.08 !important;
+          }
+
+          .v-btn__content,
+          .v-btn__prepend {
+            z-index: 1;
+          }
+        }
+
+        .v-ripple__animation {
+          color: rgb(var(--v-theme-primary)) !important;
+          opacity: 0.08 !important;
+        }
+      }
+    }
+
+    &:focus-visible {
+      outline: 2px solid rgb(var(--v-theme-secondary)) !important;
+      outline-offset: 1px;
+      border-radius: 2px;
+    }
+
+    &.v-btn--size-small {
+      .v-btn__prepend {
+        margin-inline-end: 3px;
+      }
+    }
+
+    &.v-btn--size-default {
+      height: 40px !important;
+
+      .v-btn__prepend {
+        margin-inline-end: 5px;
+      }
+    }
+
+    &.v-btn--size-large {
+      .v-btn__prepend {
+        margin-inline-end: 5px;
+      }
+
+      height: 56px !important;
+      padding: 0 24px;
+      border-radius: 5px;
     }
   }
 }

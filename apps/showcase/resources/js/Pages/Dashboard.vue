@@ -8,8 +8,6 @@ import {
   Panel,
   NotificationCard,
   NotificationCardTypeEnum as NotificationCardType,
-  MessageBar,
-  MessageBarTypeEnum as MessageBarType,
 } from '@reference-app-laravel-vue/ui-kit';
 
 interface User {
@@ -91,8 +89,6 @@ const notifications = ref([
     timestamp: '1 min ago',
   },
 ]);
-
-const messageBarVisible = ref(true);
 
 const dismissNotification = (index: number) => {
   notifications.value.splice(index, 1);
@@ -326,18 +322,6 @@ const dismissNotification = (index: number) => {
             </div>
           </div>
         </Panel>
-      </v-col>
-    </v-row>
-
-    <!-- Message Bar Demo -->
-    <v-row class="mt-4">
-      <v-col cols="12">
-        <MessageBar
-          v-model="messageBarVisible"
-          closable
-          :type="MessageBarType.Info">
-          This is a demo dashboard showcasing UI-kit components from the shared library
-        </MessageBar>
       </v-col>
     </v-row>
   </AppLayout>

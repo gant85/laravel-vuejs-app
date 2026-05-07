@@ -1,0 +1,45 @@
+@mixin overrides {
+  .v-chip {
+    height: 22px !important;
+
+    &:has(.v-chip__close) {
+      gap: 4px !important;
+      padding-top: 4px !important;
+      padding-right: 4px !important;
+      padding-bottom: 4px !important;
+    }
+
+    &:not(:has(.v-chip__close)) {
+      padding-top: 5px !important;
+      padding-bottom: 5px !important;
+      border-radius: 16px !important;
+    }
+
+    &__close {
+      max-width: 14px !important;
+      max-height: 14px !important;
+      margin-inline: 0 !important;
+      font-size: 14px !important;
+    }
+
+    &_selected {
+      background-color: #d0e4ff !important;
+      border: none !important;
+    }
+
+    &--variant-outlined {
+      border-color: rgb(var(--v-theme-outline-variant)) !important;
+
+      &:hover {
+        background-color: rgb(var(--v-theme-on-surface-variant), 0.08) !important;
+      }
+    }
+
+    &--disabled {
+      color: rgb(var(--v-theme-on-surface-variant)) !important;
+      background-color: rgb(var(--v-theme-on-surface-variant), 0.16) !important;
+      border: 1px solid transparent !important;
+      opacity: 1 !important;
+    }
+  }
+}

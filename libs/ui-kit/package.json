@@ -45,8 +45,9 @@
     "@mdi/font": "^7.4.47"
   },
   "peerDependencies": {
+    "maska": "~3.2.0",
     "vue": "^3.5.13",
-    "vuetify": "^3.7.6"
+    "vuetify": "3.12.4"
   },
   "devDependencies": {
     "@eslint/js": "^9.18.0",

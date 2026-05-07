@@ -10,68 +10,85 @@
 
     <h2 class="text-h5 mb-4">Examples</h2>
     <div class="ml-4">
-      <!-- Basic Expansion Panels -->
+      <!-- Basic Expansion Panel -->
       <div class="mb-8">
-        <h3 class="text-subtitle-1 font-weight-bold mb-2">Basic</h3>
+        <h3 class="text-subtitle-1 font-weight-bold mb-2">Basic Expansion Panel</h3>
         <v-sheet
-          class="pa-4"
           color="grey-lighten-4"
           rounded>
-          <pre class="text-caption"><code>&lt;v-expansion-panels&gt;
-  &lt;v-expansion-panel&gt;
-    &lt;v-expansion-panel-title&gt;Panel 1&lt;/v-expansion-panel-title&gt;
-    &lt;v-expansion-panel-text&gt;Content&lt;/v-expansion-panel-text&gt;
-  &lt;/v-expansion-panel&gt;
-&lt;/v-expansion-panels&gt;</code></pre>
+          <HighlightedCode :code="examples.basic"></HighlightedCode>
         </v-sheet>
         <div class="mt-4">
           <v-expansion-panels>
             <v-expansion-panel>
-              <v-expansion-panel-title>Panel 1</v-expansion-panel-title>
+              <v-expansion-panel-title>
+                <v-icon
+                  icon="star"
+                  size="x-small"
+                  color="on-surface-variant" />
+                <span class="text-body-small-bd text-on-surface-variant">Title</span>
+                <span class="text-body-small-bd text-on-surface-variant"> - </span>
+                <span class="text-body-small text-on-surface-variant"> Subtitle </span>
+              </v-expansion-panel-title>
               <v-expansion-panel-text>
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-              </v-expansion-panel-text>
-            </v-expansion-panel>
-            <v-expansion-panel>
-              <v-expansion-panel-title>Panel 2</v-expansion-panel-title>
-              <v-expansion-panel-text>
-                Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
-              </v-expansion-panel-text>
-            </v-expansion-panel>
-            <v-expansion-panel>
-              <v-expansion-panel-title>Panel 3</v-expansion-panel-title>
-              <v-expansion-panel-text>
-                Ut enim ad minim veniam, quis nostrud exercitation.
+                <div class="pa-3">
+                  Lorem ipsum dolor sit amet consectetur adipisicing elit. Commodi, ratione debitis
+                  quis est labore voluptatibus! Eaque cupiditate minima
+                </div>
               </v-expansion-panel-text>
             </v-expansion-panel>
           </v-expansion-panels>
         </div>
       </div>
-
-      <!-- Accordion -->
       <div class="mb-8">
-        <h3 class="text-subtitle-1 font-weight-bold mb-2">Accordion (Only One Open)</h3>
         <v-sheet
-          class="pa-4"
           color="grey-lighten-4"
           rounded>
-          <pre class="text-caption"><code>&lt;v-expansion-panels variant="accordion"&gt;
-  &lt;v-expansion-panel&gt;...&lt;/v-expansion-panel&gt;
-&lt;/v-expansion-panels&gt;</code></pre>
+          <HighlightedCode :code="examples.withoutIcon"></HighlightedCode>
         </v-sheet>
-        <div class="mt-4">
-          <v-expansion-panels variant="accordion">
-            <v-expansion-panel>
-              <v-expansion-panel-title>Item 1</v-expansion-panel-title>
-              <v-expansion-panel-text>Content for item 1</v-expansion-panel-text>
-            </v-expansion-panel>
-            <v-expansion-panel>
-              <v-expansion-panel-title>Item 2</v-expansion-panel-title>
-              <v-expansion-panel-text>Content for item 2</v-expansion-panel-text>
-            </v-expansion-panel>
-          </v-expansion-panels>
+        <div class="mt-4"></div>
+        <div class="text-body-medium mt-4">
+          <strong>Developer Note:</strong> The icon is optional. Simply omit the
+          <code>v-icon</code> from the title slot.
         </div>
+        <p class="text-body-medium-sb mt-6">
+          For more details, refer to the
+          <a
+            href="https://v3.vuetifyjs.com/en/components/expansion-panels/#usage"
+            target="_blank"
+            class="text-primary text-decoration-none"
+            >Official Vuetify Documentation</a
+          >.
+        </p>
       </div>
     </div>
   </v-container>
 </template>
+
+<script setup lang="ts">
+import HighlightedCode from '../../../components/HighlightedCode.vue';
+
+const examples = {
+  basic: `
+  <v-expansion-panels>
+            <v-expansion-panel>
+              <v-expansion-panel-title>
+                <v-icon
+                  icon="star"
+                  size="x-small"
+                  color="on-surface-variant" />
+                <span class="text-body-small-bd text-on-surface-variant">Title</span>
+                <span class="text-body-small-bd text-on-surface-variant"> - </span>
+                <span class="text-body-small text-on-surface-variant"> Subtitle </span>
+              </v-expansion-panel-title>
+              <v-expansion-panel-text>
+              <div class="pa-3">
+                Lorem ipsum dolor sit amet consectetur adipisicing elit. Commodi, ratione debitis
+                quis est labore voluptatibus! Eaque cupiditate minima
+              </div>
+              </v-expansion-panel-text>
+            </v-expansion-panel>
+          </v-expansion-panels>
+`,
+};
+</script>

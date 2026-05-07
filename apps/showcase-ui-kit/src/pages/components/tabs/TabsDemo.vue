@@ -16,81 +16,63 @@
       <div class="mb-8">
         <h3 class="text-subtitle-1 font-weight-bold mb-2">Basic Tabs</h3>
         <v-sheet
-          class="pa-4"
           color="grey-lighten-4"
           rounded>
-          <pre class="text-caption"><code>&lt;v-tabs v-model="tab"&gt;
-  &lt;v-tab value="one"&gt;Tab 1&lt;/v-tab&gt;
-  &lt;v-tab value="two"&gt;Tab 2&lt;/v-tab&gt;
-  &lt;v-tab value="three"&gt;Tab 3&lt;/v-tab&gt;
-&lt;/v-tabs&gt;</code></pre>
+          <HighlightedCode :code="examples.Tabs"></HighlightedCode>
         </v-sheet>
-        <div class="mt-4">
-          <v-tabs v-model="tab1">
-            <v-tab value="one">Tab 1</v-tab>
-            <v-tab value="two">Tab 2</v-tab>
-            <v-tab value="three">Tab 3</v-tab>
-          </v-tabs>
-          <v-window v-model="tab1">
-            <v-window-item value="one">
-              <v-card
-                flat
-                class="pa-4">
-                Content for Tab 1
-              </v-card>
-            </v-window-item>
-            <v-window-item value="two">
-              <v-card
-                flat
-                class="pa-4">
-                Content for Tab 2
-              </v-card>
-            </v-window-item>
-            <v-window-item value="three">
-              <v-card
-                flat
-                class="pa-4">
-                Content for Tab 3
-              </v-card>
-            </v-window-item>
-          </v-window>
-        </div>
-      </div>
 
-      <!-- Tabs with Icons -->
-      <div class="mb-8">
-        <h3 class="text-subtitle-1 font-weight-bold mb-2">Tabs with Icons</h3>
-        <v-sheet
-          class="pa-4"
-          color="grey-lighten-4"
-          rounded>
-          <pre class="text-caption"><code>&lt;v-tabs v-model="tab"&gt;
-  &lt;v-tab value="phone"&gt;
-    &lt;v-icon&gt;mdi-phone&lt;/v-icon&gt;
-  &lt;/v-tab&gt;
-&lt;/v-tabs&gt;</code></pre>
-        </v-sheet>
-        <div class="mt-4">
-          <v-tabs v-model="tab2">
-            <v-tab value="phone">
-              <v-icon>mdi-phone</v-icon>
-            </v-tab>
-            <v-tab value="heart">
-              <v-icon>mdi-heart</v-icon>
-            </v-tab>
-            <v-tab value="account">
-              <v-icon>mdi-account</v-icon>
-            </v-tab>
+        <v-sheet>
+          <v-tabs
+            v-model="tab"
+            color="primary">
+            <v-tab value="one">Item One</v-tab>
+            <v-tab value="two">Item Two</v-tab>
+            <v-tab value="three">Item Three</v-tab>
           </v-tabs>
-        </div>
+
+          <v-tabs-window v-model="tab">
+            <v-tabs-window-item value="one">
+              <v-sheet class="pa-5">One</v-sheet>
+            </v-tabs-window-item>
+            <v-tabs-window-item value="two">
+              <v-sheet class="pa-5">Two</v-sheet>
+            </v-tabs-window-item>
+            <v-tabs-window-item value="three">
+              <v-sheet class="pa-5">Three</v-sheet>
+            </v-tabs-window-item>
+          </v-tabs-window>
+        </v-sheet>
       </div>
     </div>
   </v-container>
 </template>
 
 <script setup lang="ts">
+import HighlightedCode from '../../../components/HighlightedCode.vue';
 import { ref } from 'vue';
 
-const tab1 = ref('one');
-const tab2 = ref('phone');
+const tab = ref('');
+
+const examples = {
+  Tabs: `
+  <v-sheet>
+  <v-tabs v-model="tab" color="primary">
+    <v-tab value="one">Item One</v-tab>
+    <v-tab value="two">Item Two</v-tab>
+    <v-tab value="three">Item Three</v-tab>
+  </v-tabs>
+
+  <v-tabs-window v-model="tab">
+    <v-tabs-window-item value="one">
+      <v-sheet class="pa-5">One</v-sheet>
+    </v-tabs-window-item>
+    <v-tabs-window-item value="two">
+      <v-sheet class="pa-5">Two</v-sheet>
+    </v-tabs-window-item>
+    <v-tabs-window-item value="three">
+      <v-sheet class="pa-5">Three</v-sheet>
+    </v-tabs-window-item>
+  </v-tabs-window>
+</v-sheet>`,
+};
 </script>

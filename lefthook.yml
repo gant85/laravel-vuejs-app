@@ -19,7 +19,7 @@ pre-commit:
       stage_fixed: true
     php-lint:
       glob: 'apps/showcase/**/*.php'
-      run: powershell -ExecutionPolicy Bypass -File scripts/php-lint.ps1 "{staged_files}"
+      run: pwsh -NoProfile -ExecutionPolicy Bypass -File scripts/php-lint.ps1 "{staged_files}"
       stage_fixed: false
 
 post-merge:

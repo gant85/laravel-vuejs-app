@@ -5,6 +5,10 @@
       opacity: 1;
     }
 
+    .v-selection-control--disabled .v-icon {
+      opacity: 0.5 !important;
+    }
+
     .v-selection-control__wrapper {
       &.text-error {
         .material-symbols-outlined {

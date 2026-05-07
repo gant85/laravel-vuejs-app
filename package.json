@@ -1,7 +1,6 @@
 {
   "name": "@reference-app-laravel-vue/root",
   "version": "1.0.0-SNAPSHOT",
-  "private": true,
   "description": "POC Full Stack Laravel + Vue + Inertia with Material 3",
   "scripts": {
     "dev": "pnpm --filter @reference-app-laravel-vue/showcase dev",
@@ -48,6 +47,7 @@
     "@softarc/eslint-plugin-sheriff": "^0.19.6",
     "@softarc/sheriff-core": "^0.19.6",
     "lefthook": "^2.0.15",
+    "nx": "22.5.0",
     "postcss-html": "^1.8.1",
     "postcss-scss": "^4.0.9",
     "prettier": "^3.6.2",
@@ -59,7 +59,9 @@
     "terser": "^5.44.1",
     "typescript": "^5.9.3",
     "vite-imagetools": "^9.0.2",
-    "vite-plugin-compression": "^0.5.1",
-    "nx": "22.5.0"
+    "vite-plugin-compression": "^0.5.1"
+  },
+  "dependencies": {
+    "maska": "~3.2.0"
   }
 }

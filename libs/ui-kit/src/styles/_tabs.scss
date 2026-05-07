@@ -1,0 +1,45 @@
+@mixin overrides {
+  .v-sheet:has(.v-tabs) {
+    background-color: transparent;
+  }
+
+  .v-tabs {
+    padding: 0 6px;
+
+    .v-slide-group__container {
+      background-color: transparent;
+
+      .v-slide-group__content {
+        .v-btn {
+          &__content {
+            font-size: 14px;
+            font-weight: 400;
+            line-height: 20px;
+            letter-spacing: 0.5px;
+          }
+
+          &.v-btn--size-default {
+            height: 48px !important;
+          }
+
+          &.v-tab-item--selected {
+            .v-btn__content {
+              font-weight: 600;
+            }
+          }
+        }
+      }
+    }
+  }
+
+  .v-window {
+    border: 1px solid rgb(var(--v-theme-outline-variant));
+    border-radius: 5px;
+
+    .v-window-item.v-window-item--active.v-tabs-window-item {
+      .v-sheet {
+        background-color: rgb(var(--v-theme-surface-container-lowest));
+      }
+    }
+  }
+}

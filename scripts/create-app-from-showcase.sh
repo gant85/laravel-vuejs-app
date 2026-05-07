@@ -63,7 +63,8 @@ if [[ -f "$TARGET_APP_DIR/.env.example" ]]; then
   cp "$TARGET_APP_DIR/.env.example" "$TARGET_APP_DIR/.env"
 fi
 
-# Update package.json and composer.json metadata and inject workspace libs.
+# Update package.json and composer.json metadata, inject workspace libs,
+# and ensure standalone pre-commit/pre-lint tooling dependencies.
 REPO_ROOT="$REPO_ROOT" PARENT_DIR="$PARENT_DIR" APP_NAME="$APP_NAME" node <<'NODE'
 const fs = require('fs');
 const path = require('path');
@@ -81,6 +82,8 @@ if (!fs.existsSync(packageJsonPath)) {
 const packageJson = JSON.parse(fs.readFileSync(packageJsonPath, 'utf8'));
 packageJson.name = appName;
 packageJson.dependencies = packageJson.dependencies || {};
+packageJson.devDependencies = packageJson.devDependencies || {};
+packageJson.scripts = packageJson.scripts || {};
 
 const libsDir = path.join(repoRoot, 'libs');
 if (fs.existsSync(libsDir)) {
@@ -94,6 +97,27 @@ if (fs.existsSync(libsDir)) {
     }
   }
 }
+
+const precommitDevDependencies = {
+  '@commitlint/cli': '^20.3.1',
+  '@commitlint/config-conventional': '^20.3.1',
+  lefthook: '^2.0.15',
+  'postcss-html': '^1.8.0',
+  'postcss-scss': '^4.0.9',
+  prettier: '^3.6.2',
+  stylelint: '^16.24.0',
+  'stylelint-config-recess-order': '^7.3.0',
+  'stylelint-config-standard': '^39.0.1',
+  'stylelint-config-standard-scss': '^16.0.0',
+  'stylelint-prettier': '^5.0.3',
+};
+
+for (const [depName, depVersion] of Object.entries(precommitDevDependencies)) {
+  packageJson.devDependencies[depName] = depVersion;
+}
+
+packageJson.scripts.prepare = 'lefthook install';
+packageJson.scripts.commitlint = 'commitlint --edit';
 
 fs.writeFileSync(packageJsonPath, JSON.stringify(packageJson, null, 2) + '\n', 'utf8');
 
@@ -143,7 +167,23 @@ if [[ -d "$REPO_ROOT/scripts" ]]; then
       chmod +x "$destSetup"
     fi
   done
+
+  srcPhpLint="$REPO_ROOT/scripts/php-lint.ps1"
+  destPhpLint="$TARGET_APP_DIR/scripts/php-lint.ps1"
+  if [[ -f "$srcPhpLint" ]]; then
+    cat "$srcPhpLint" | sed -e "s|reference-app-laravel-vue|$APP_NAME|g" > "$destPhpLint"
+  fi
 fi
+
+# Copy pre-commit / pre-lint tooling configuration for standalone workflow.
+for toolingFile in "lefthook.yml" "commitlint.config.mjs" ".prettierrc" ".stylelintrc.json" ".editorconfig"; do
+  srcTooling="$REPO_ROOT/$toolingFile"
+  destTooling="$TARGET_APP_DIR/$toolingFile"
+  if [[ -f "$srcTooling" ]]; then
+    cat "$srcTooling" | sed -e "s|reference-app-laravel-vue|$APP_NAME|g" \
+                            -e "s|apps/showcase/\*\*/\*\.php|**/*.php|g" > "$destTooling"
+  fi
+done
 
 echo "Replacing 'showcase' with '$APP_NAME' in all text files..."
 find "$TARGET_APP_DIR" -type f \( -name "*.php" -o -name "*.vue" -o -name "*.ts" -o -name "*.js" -o -name "*.json" -o -name "*.yml" -o -name "*.yaml" -o -name "*.md" -o -name ".env*" -o -name "*.scss" -o -name "*.css" -o -name "*.xml" -o -name "*.html" -o -name "*.sh" -o -name "*.ps1" \) | while read -r file; do

@@ -1,0 +1,37 @@
+@mixin overrides {
+  .v-expansion-panel {
+    border-color: rgb(var(--v-theme-outline-variant)) !important;
+    border-radius: 2px !important;
+
+    &-text__wrapper {
+      padding: 0 !important;
+      background-color: rgb(var(--v-theme-surface-bright)) !important;
+    }
+
+    &-title {
+      min-height: 24px !important;
+      padding-top: 0;
+      padding-bottom: 0;
+
+      &__icon {
+        .v-icon--size-default {
+          font-size: 18px !important;
+        }
+      }
+
+      .v-icon--size-x-small {
+        font-size: 16px !important;
+      }
+
+      &__overlay {
+        height: 24px;
+        min-height: 24px !important;
+      }
+    }
+
+    &--active > .v-expansion-panel-title {
+      min-height: 24px !important;
+      border-bottom: 1px solid rgb(var(--v-theme-outline-variant)) !important;
+    }
+  }
+}

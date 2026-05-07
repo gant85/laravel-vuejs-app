@@ -60,12 +60,6 @@ const cards = ref<Card[]>([
     link: '/components/badges-demo',
   },
   {
-    title: 'Bottom Sheet',
-    description:
-      'Mobile bottom sheets allow users to complete a series of simple steps within a larger task.',
-    link: '/components/bottom-sheet',
-  },
-  {
     title: 'Buttons',
     description:
       'Buttons communicate the action that will occur when the user interacts with them.',
@@ -76,6 +70,24 @@ const cards = ref<Card[]>([
     description:
       'Cards are a convenient means of displaying content composed of different elements.',
     link: '/components/cards-demo',
+  },
+  {
+    title: 'Checkboxes',
+    description:
+      'Checkboxes allow users to select one or more items from a set, or toggle a single option on or off.',
+    link: '/components/check-boxes-demo',
+  },
+  {
+    title: 'Chips',
+    description:
+      'Chips represent discrete pieces of information entered by the user, such as selected items in a text field.',
+    link: '/components/input-chips-demo',
+  },
+  {
+    title: 'Colors',
+    description:
+      'Material Design 3 tonal color system — palettes, semantic roles, accessible pairings, and usage examples.',
+    link: '/brand/colors-demo',
   },
   {
     title: 'Datepickers',
@@ -93,11 +105,6 @@ const cards = ref<Card[]>([
     link: '/components/dividers-demo',
   },
   {
-    title: 'Drop-downs',
-    description: 'Drop-downs display a list of choices on temporary surfaces.',
-    link: '/components/drop-downs-demo',
-  },
-  {
     title: 'Elevations',
     description: 'Elevation demonstrates how components use shadows to create depth.',
     link: '/components/elevations-demo',
@@ -108,15 +115,14 @@ const cards = ref<Card[]>([
     link: '/components/expansion-panels-demo',
   },
   {
-    title: 'Colors',
-    description:
-      'Material Design 3 tonal color system — palettes, semantic roles, accessible pairings, and usage examples.',
-    link: '/brand/colors-demo',
-  },
-  {
     title: 'Icons',
     description: 'Icons are visual symbols used to represent ideas, objects, or actions.',
     link: '/brand/icons-demo',
+  },
+  {
+    title: 'Input field',
+    description: 'Input field let users enter and edit text.',
+    link: '/components/text-fields-demo',
   },
   {
     title: 'Typography',
@@ -128,17 +134,6 @@ const cards = ref<Card[]>([
     title: 'Labels',
     description: 'Labels are text identifiers for form fields and other UI elements.',
     link: '/components/labels-demo',
-  },
-  {
-    title: 'Menus',
-    description: 'Menus display a list of choices on temporary surfaces.',
-    link: '/components/menus-demo',
-  },
-  {
-    title: 'Message Bar',
-    description:
-      'Message bars provide brief messages about app processes at the bottom of the screen.',
-    link: '/components/message-bar-demo',
   },
   {
     title: 'Notifications XS',
@@ -163,13 +158,15 @@ const cards = ref<Card[]>([
   },
   {
     title: 'Radio Buttons',
-    description: 'Radio buttons allow users to select a single option from a set of mutually exclusive choices.',
+    description:
+      'Radio buttons allow users to select a single option from a set of mutually exclusive choices.',
     link: '/components/radio-buttons-demo',
   },
   {
-    title: 'Selection Controls',
-    description: 'Selection controls allow users to select options.',
-    link: '/components/selection-controls-demo',
+    title: 'Snackbars',
+    description:
+      'Snackbars component is used to display a quick message to a user. Snackbars support positioning, removal delay, and callbacks.',
+    link: '/components/snackbars-demo',
   },
   {
     title: 'Switches',
@@ -181,11 +178,6 @@ const cards = ref<Card[]>([
     title: 'Tabs',
     description: 'Tabs organize content across different screens and views.',
     link: '/components/tabs-demo',
-  },
-  {
-    title: 'Text Fields',
-    description: 'Text fields let users enter and edit text.',
-    link: '/components/text-fields-demo',
   },
   {
     title: 'Tooltips',

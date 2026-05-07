@@ -1,0 +1,241 @@
+@mixin text-helpers {
+  .text-on-primary {
+    color: rgb(var(--v-theme-on-primary)) !important;
+  }
+
+  .text-primary {
+    color: rgb(var(--v-theme-primary)) !important;
+  }
+
+  .text-primary-container {
+    color: rgb(var(--v-theme-primary-container)) !important;
+  }
+
+  .text-on-primary-container {
+    color: rgb(var(--v-theme-on-primary-container)) !important;
+  }
+
+  .text-secondary {
+    color: rgb(var(--v-theme-secondary)) !important;
+  }
+
+  .text-on-secondary {
+    color: rgb(var(--v-theme-on-secondary)) !important;
+  }
+
+  .text-secondary-container {
+    color: rgb(var(--v-theme-secondary-container)) !important;
+  }
+
+  .text-on-secondary-container {
+    color: rgb(var(--v-theme-on-secondary-container)) !important;
+  }
+
+  .text-tertiary {
+    color: rgb(var(--v-theme-tertiary)) !important;
+  }
+
+  .text-on-tertiary {
+    color: rgb(var(--v-theme-on-tertiary)) !important;
+  }
+
+  .text-tertiary-container {
+    color: rgb(var(--v-theme-tertiary-container)) !important;
+  }
+
+  .text-on-tertiary-container {
+    color: rgb(var(--v-theme-on-tertiary-container)) !important;
+  }
+
+  .text-error {
+    color: rgb(var(--v-theme-error)) !important;
+  }
+
+  .text-on-error {
+    color: rgb(var(--v-theme-on-error)) !important;
+  }
+
+  .text-error-container {
+    color: rgb(var(--v-theme-error-container)) !important;
+  }
+
+  .text-on-error-container {
+    color: rgb(var(--v-theme-on-error-container)) !important;
+  }
+
+  .text-background {
+    color: rgb(var(--v-theme-background)) !important;
+  }
+
+  .text-on-background {
+    color: rgb(var(--v-theme-on-background)) !important;
+  }
+
+  .text-surface {
+    color: rgb(var(--v-theme-surface)) !important;
+  }
+
+  .text-on-surface {
+    color: rgb(var(--v-theme-on-surface)) !important;
+  }
+
+  .text-surface-variant {
+    color: rgb(var(--v-theme-surface-variant)) !important;
+  }
+
+  .text-on-surface-variant {
+    color: rgb(var(--v-theme-on-surface-variant)) !important;
+  }
+
+  .text-surface-dim {
+    color: rgb(var(--v-theme-surface-dim)) !important;
+  }
+
+  .text-surface-bright {
+    color: rgb(var(--v-theme-surface-bright)) !important;
+  }
+
+  .text-surface-container-lowest {
+    color: rgb(var(--v-theme-surface-container-lowest)) !important;
+  }
+
+  .text-surface-container-low {
+    color: rgb(var(--v-theme-surface-container-low)) !important;
+  }
+
+  .text-surface-container {
+    color: rgb(var(--v-theme-surface-container)) !important;
+  }
+
+  .text-surface-container-high {
+    color: rgb(var(--v-theme-surface-container-high)) !important;
+  }
+
+  .text-surface-container-highest {
+    color: rgb(var(--v-theme-surface-container-highest)) !important;
+  }
+
+  .text-outline {
+    color: rgb(var(--v-theme-outline)) !important;
+  }
+
+  .text-outline-variant {
+    color: rgb(var(--v-theme-outline-variant)) !important;
+  }
+
+  .text-inverse-surface {
+    color: rgb(var(--v-theme-inverse-surface)) !important;
+  }
+
+  .text-inverse-on-surface {
+    color: rgb(var(--v-theme-inverse-on-surface)) !important;
+  }
+
+  .text-inverse-primary {
+    color: rgb(var(--v-theme-inverse-primary)) !important;
+  }
+
+  .text-shadow {
+    color: rgb(var(--v-theme-shadow)) !important;
+  }
+
+  .text-scrim {
+    color: rgb(var(--v-theme-scrim)) !important;
+  }
+
+  .text-primary-fixed {
+    color: rgb(var(--v-theme-primary-fixed)) !important;
+  }
+
+  .text-primary-fixed-dim {
+    color: rgb(var(--v-theme-primary-fixed-dim)) !important;
+  }
+
+  .text-on-primary-fixed {
+    color: rgb(var(--v-theme-on-primary-fixed)) !important;
+  }
+
+  .text-on-primary-fixed-variant {
+    color: rgb(var(--v-theme-on-primary-fixed-variant)) !important;
+  }
+
+  .text-secondary-fixed {
+    color: rgb(var(--v-theme-secondary-fixed)) !important;
+  }
+
+  .text-secondary-fixed-dim {
+    color: rgb(var(--v-theme-secondary-fixed-dim)) !important;
+  }
+
+  .text-on-secondary-fixed {
+    color: rgb(var(--v-theme-on-secondary-fixed)) !important;
+  }
+
+  .text-on-secondary-fixed-variant {
+    color: rgb(var(--v-theme-on-secondary-fixed-variant)) !important;
+  }
+
+  .text-tertiary-fixed {
+    color: rgb(var(--v-theme-tertiary-fixed)) !important;
+  }
+
+  .text-tertiary-fixed-dim {
+    color: rgb(var(--v-theme-tertiary-fixed-dim)) !important;
+  }
+
+  .text-on-tertiary-fixed {
+    color: rgb(var(--v-theme-on-tertiary-fixed)) !important;
+  }
+
+  .text-on-tertiary-fixed-variant {
+    color: rgb(var(--v-theme-on-tertiary-fixed-variant)) !important;
+  }
+
+  .text-success {
+    color: rgb(var(--v-theme-success)) !important;
+  }
+
+  .text-on-success {
+    color: rgb(var(--v-theme-on-success)) !important;
+  }
+
+  .text-success-container {
+    color: rgb(var(--v-theme-success-container)) !important;
+  }
+
+  .text-on-success-container {
+    color: rgb(var(--v-theme-on-success-container)) !important;
+  }
+
+  .text-warning {
+    color: rgb(var(--v-theme-warning)) !important;
+  }
+
+  .text-on-warning {
+    color: rgb(var(--v-theme-on-warning)) !important;
+  }
+
+  .text-warning-container {
+    color: rgb(var(--v-theme-warning-container)) !important;
+  }
+
+  .text-on-warning-container {
+    color: rgb(var(--v-theme-on-warning-container)) !important;
+  }
+
+  .text-info {
+    color: rgb(var(--v-theme-info)) !important;
+  }
+
+  .text-on-info {
+    color: rgb(var(--v-theme-on-info)) !important;
+  }
+
+  .text-info-container {
+    color: rgb(var(--v-theme-info-container)) !important;
+  }
+
+  .text-on-info-container {
+    color: rgb(var(--v-theme-on-info-container)) !important;
+  }
+}

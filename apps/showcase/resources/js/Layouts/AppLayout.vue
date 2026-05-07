@@ -1,10 +1,6 @@
 <script setup lang="ts">
 import { ref } from 'vue';
 import { Head, router, usePage } from '@inertiajs/vue3';
-import {
-  MessageBar,
-  MessageBarTypeEnum as MessageBarType,
-} from '@reference-app-laravel-vue/ui-kit';
 
 defineProps<{
   title?: string;
@@ -200,14 +196,6 @@ const logout = () => {
 
       <!-- Main Content Area -->
       <v-main>
-        <!-- System Message Bar -->
-        <MessageBar
-          v-model="systemMessageVisible"
-          closable
-          :type="MessageBarType.Information">
-          System is running smoothly. All services are operational.
-        </MessageBar>
-
         <v-container
           fluid
           class="pa-6">
